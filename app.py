@@ -1,13 +1,18 @@
 import os
 import threading
 from flask import Flask, Response, render_template, request
+from flask_login import LoginManager
 import requests
 
 from scripts.init import app
 from scripts.models import db
 
-from apis.auth_api import user_api
-app.register_blueprint(user_api)
+from apis.auth_api import auth_api
+from apis.userinfo_api import userinfo_api
+
+app.register_blueprint(auth_api)
+app.register_blueprint(userinfo_api)
+
 
 @app.route('/')
 def index():

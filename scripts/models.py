@@ -1,4 +1,4 @@
-from flask_login import UserMixin
+from flask_login import LoginManager, UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import CheckConstraint, Column, Integer, String, Text, ForeignKey, DateTime
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -111,4 +111,11 @@ class MemeTag(db.Model):
 with app.app_context():
     # db.drop_all()
     db.create_all()
+
+login_manager = LoginManager(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    user = User.query.filter_by(user_id=user_id).first()
+    return user
     
