@@ -6,7 +6,7 @@ import requests
 from scripts.init import app
 from scripts.models import db
 
-from apis.user_api import user_api
+from apis.auth_api import user_api
 app.register_blueprint(user_api)
 
 @app.route('/')
