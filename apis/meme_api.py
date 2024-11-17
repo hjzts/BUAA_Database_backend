@@ -71,6 +71,38 @@ def meme_get_total_num():
 
     return respond(0, "查询成功", {"num":num})
 
+@app.route("/api/meme-get", methods=['POST'])
+@login_required
+def meme_get():
+    meme_id = request.form.get('memeId') or None
+
+    for r in check_null_params(表情包id=meme_id):
+        return r
+    
+    meme = Meme.query.filter(Meme.meme_id==meme_id).first()
+
+    if meme is None:
+        return respond(500101, "表情包不存在")
+
+    meme_data = {
+        "memeId" : meme.meme_id,
+        "caption": meme.caption,
+        "imageUrl" : meme.image_url,
+        "uploadUsername" : User.query.filter(User.user_id==meme.user_id).first().username,
+        "uploadTime" : meme.upload_time,
+        "views" : meme.views,
+        "likes" : meme.likes,
+        "isBlock": meme.is_block,
+        "tags":[{
+            "tagId": tag.tag_id,
+            "tagName": tag.name
+        } for tag in Tag.query.join(MemeTag,
+            and_(MemeTag.meme_id==meme.meme_id, MemeTag.tag_id==Tag.tag_id)).all()]
+    }
+
+
+    return respond(0, "查询成功", meme_data)
+
 @app.route("/api/meme-get-batch", methods=['POST'])
 @login_required
 def meme_get_batch():

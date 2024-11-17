@@ -49,6 +49,7 @@ class Tag(db.Model):
 class Warehouse(db.Model):
     warehouse_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
+    name = Column(String(256), nullable=False)
     capacity = Column(Integer, nullable=False, default=30) # 剩余容量
 
 
@@ -86,7 +87,7 @@ class Bookmark(db.Model):
     bookmark_id = Column(Integer, primary_key=True, autoincrement=True)
     meme_id = Column(Integer, ForeignKey("meme.meme_id"), nullable=False)
     warehouse_id = Column(Integer, ForeignKey("warehouse.warehouse_id"), nullable=False)
-    bookmark_date = Column(DateTime, nullable=False, default=datetime.now())
+    bookmark_time = Column(DateTime, nullable=False, default=datetime.now())
 
 
 class Report(db.Model):
@@ -94,7 +95,7 @@ class Report(db.Model):
     meme_id = Column(Integer, ForeignKey("meme.meme_id"), nullable=False)
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     reason = Column(Text, nullable=False)
-    report_date = Column(DateTime, nullable=False, default=datetime.now())
+    report_time = Column(DateTime, nullable=False, default=datetime.now())
     status = Column(String(256), nullable=False)
 
     __table_args__ = (
