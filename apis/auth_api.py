@@ -23,16 +23,16 @@ def auth_signup():
         return r
     
     if not re.match(r'^[a-z0-9_]+$', username):
-        return respond(ERR_WRONG_FORMAT, {"info":"用户名不合法"})
+        return respond(ERR_WRONG_FORMAT, "用户名不合法")
     
     if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$', email):
-        return respond(ERR_WRONG_FORMAT, {"info":"邮箱不合法"})
+        return respond(ERR_WRONG_FORMAT, "邮箱不合法")
     
     if User.query.filter(User.username==username).first() != None:
-        return respond(200201, {"info":"此用户名已被占用！"})
+        return respond(200201, "此用户名已被占用！")
     
     if User.query.filter(User.email==email).first() != None:
-        return respond(200202, {"info":"此邮箱已被用于注册！"})
+        return respond(200202, "此邮箱已被用于注册！")
     
     user = User(
         username=username,
@@ -43,7 +43,7 @@ def auth_signup():
     db.session.add(user)
     db.session.commit()
 
-    return respond(0, {"info":"注册成功！"})
+    return respond(0, "注册成功！")
 
 @app.route("/api/auth-login", methods=['POST'])
 def auth_login():
@@ -58,10 +58,10 @@ def auth_login():
     else:
         user:User = User.query.filter(User.username==name).first()
     if user == None:
-        return respond(200101, {"info":"此用户不存在！"})
+        return respond(200101, "此用户不存在！")
     
     if not user.validate_password(password):
-        return respond(200101, {"info":"密码错误！"})
+        return respond(200101, "密码错误！")
     
     login_user(user)
         
@@ -70,11 +70,11 @@ def auth_login():
     if not os.path.exists(user_path):
         os.mkdir(user_path)
 
-    return respond(0, {'info':"登录成功！"})
+    return respond(0, "登录成功！")
 
 @app.route("/api/auth-logout", methods=['POST'])
 @login_required
 def auth_logout():
     logout_user()
 
-    return respond(0, {'info':"登出成功！"})
+    return respond(0, "登出成功！")

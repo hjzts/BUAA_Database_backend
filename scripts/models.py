@@ -1,6 +1,6 @@
 from flask_login import LoginManager, UserMixin
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import CheckConstraint, Column, Integer, String, Text, ForeignKey, DateTime
+from sqlalchemy import CheckConstraint, Column, Integer, String, Text, ForeignKey, DateTime, Boolean
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
@@ -16,8 +16,9 @@ class User(db.Model, UserMixin):
     password_hash = Column(String(256), nullable=False)
     profile_picture = Column(String(256), nullable=True)
     bio = Column(Text, nullable=True)
-    signup_date = Column(DateTime, nullable=False, default=datetime.now())
+    signup_time = Column(DateTime, nullable=False, default=datetime.now())
     hugo_coin = Column(Integer, nullable=False, default=0)
+    is_ban = Column(Boolean, nullable=False, default=False)
 
     def get_id(self):
         return self.user_id
@@ -32,11 +33,12 @@ class User(db.Model, UserMixin):
 class Meme(db.Model):
     meme_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
-    description = Column(Text, nullable=True)
+    caption = Column(Text, nullable=True)
     image_url = Column(String(256), nullable=False)
     upload_time = Column(DateTime, nullable=False, default=datetime.now())
     views = Column(Integer, nullable=False, default=0)
     likes = Column(Integer, nullable=False, default=0)
+    is_block = Column(Boolean, nullable=False, default=False)
 
 
 class Tag(db.Model):
@@ -109,7 +111,6 @@ class MemeTag(db.Model):
 
 # Initialize the database
 with app.app_context():
-    # db.drop_all()
     db.create_all()
 
 login_manager = LoginManager(app)

@@ -3,11 +3,13 @@ import os, sys, json, time
 from scripts.err import ERR_NULL_INPUT
 from scripts.init import ALLOWED_EXTENSIONS
 
-def respond(code:int, data:dict=None):
+def respond(code:int, info:str, data:dict=None):
+    data_dict = data or {}
     ret_json = {
-        'success': "true" if code == 0 else "false",
+        'data' : data_dict,
         'errCode': code,
-        'data' : data or {}
+        'info' :info,
+        'success': "true" if code == 0 else "false",
     }
     return ret_json
 
@@ -15,7 +17,7 @@ def check_null_params(**kwargs):
     error_list = []
     for k,v in kwargs.items():
         if v is None:
-            error_list.append(respond(ERR_NULL_INPUT, {"info":f"{k}不能为空"}))
+            error_list.append(respond(ERR_NULL_INPUT, f"{k}不能为空"))
 
     return error_list
 
