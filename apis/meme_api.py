@@ -76,7 +76,7 @@ def meme_delete():
 
     if meme is None:
         return respond(500101, "表情包不存在或无权操作")
-    
+
     db.session.delete(meme)
     db.session.commit()
 

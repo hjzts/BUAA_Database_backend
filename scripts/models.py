@@ -40,6 +40,12 @@ class Meme(db.Model):
     likes = Column(Integer, nullable=False, default=0)
     is_block = Column(Boolean, nullable=False, default=False)
 
+    ref_memetags = db.relationship('MemeTag', backref='meme', cascade='all, delete-orphan')
+    ref_comments = db.relationship('Comment', backref='meme', cascade='all, delete-orphan')
+    ref_likes = db.relationship('Like', backref='meme', cascade='all, delete-orphan')
+    ref_bookmarks = db.relationship('Bookmark', backref='meme', cascade='all, delete-orphan')
+    ref_reports = db.relationship('Report', backref='meme', cascade='all, delete-orphan')
+
 
 class Tag(db.Model):
     tag_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -51,6 +57,8 @@ class Warehouse(db.Model):
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     name = Column(String(256), nullable=False)
     capacity = Column(Integer, nullable=False, default=30) # 剩余容量
+
+    ref_bookmarks = db.relationship('Bookmark', backref='warehouse', cascade='all, delete-orphan')
 
 
 class Post(db.Model):
@@ -106,7 +114,9 @@ class Report(db.Model):
 class MemeTag(db.Model):
     memetag_id = Column(Integer, primary_key=True, autoincrement=True)
     meme_id = Column(Integer, ForeignKey("meme.meme_id", ondelete='CASCADE'), nullable=False)
-    tag_id = Column(Integer, ForeignKey("tag.tag_id", ondelete='CASCADE'), nullable=False)
+    tag_id = Column(Integer, ForeignKey("tag.tag_id"), nullable=False)
+
+   
     
     
 
