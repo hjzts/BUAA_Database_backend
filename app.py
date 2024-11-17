@@ -13,13 +13,14 @@ from apis.auth_api import auth_api
 from apis.userinfo_api import userinfo_api
 from apis.meme_api import meme_api
 from apis.warehouse_api import warehouse_api
+from apis.like_api import like_api
 from scripts.init import init_folders
 
 app.register_blueprint(auth_api)
 app.register_blueprint(userinfo_api)
 app.register_blueprint(meme_api)
 app.register_blueprint(warehouse_api)
-
+app.register_blueprint(like_api)
 
 @app.route('/')
 def index():

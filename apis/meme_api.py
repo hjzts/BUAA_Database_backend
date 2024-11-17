@@ -64,12 +64,50 @@ def meme_upload():
 
     return respond(0, "上传成功！")
 
+@app.route("/api/meme-delete", methods=['POST'])
+@login_required
+def meme_delete():
+    meme_id = request.form.get('memeId') or None
+
+    for r in check_null_params(表情包id=meme_id):
+        return r
+    
+    meme = Meme.query.filter(and_(Meme.meme_id==meme_id, Meme.user_id==current_user.user_id)).first()
+
+    if meme is None:
+        return respond(500101, "表情包不存在或无权操作")
+    
+    db.session.delete(meme)
+    db.session.commit()
+
+    return respond(0, "删除成功")
+
+
 @app.route("/api/meme-get-total-num", methods=['POST'])
 @login_required
 def meme_get_total_num():
     num = Meme.query.count()
 
     return respond(0, "查询成功", {"num":num})
+
+@app.route("/api/meme-view", methods=['POST'])
+@login_required
+def meme_view():
+    meme_id = request.form.get('memeId') or None
+
+    for r in check_null_params(表情包id=meme_id):
+        return r
+    
+    meme = Meme.query.filter(Meme.meme_id==meme_id).first()
+
+    if meme is None:
+        return respond(500101, "表情包不存在")
+
+    meme.views += 1
+
+    db.session.commit()
+
+    return respond(0, "更新成功", {"views": meme.views})
 
 @app.route("/api/meme-get", methods=['POST'])
 @login_required

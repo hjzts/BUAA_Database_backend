@@ -62,7 +62,7 @@ class Post(db.Model):
 
 class Comment(db.Model):
     comment_id = Column(Integer, primary_key=True, autoincrement=True)
-    meme_id = Column(Integer, ForeignKey("meme.meme_id"), nullable=False)
+    meme_id = Column(Integer, ForeignKey("meme.meme_id", ondelete='CASCADE'), nullable=False)
     to_comment_id = Column(Integer, nullable=True)
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     content = Column(Text, nullable=False)
@@ -78,21 +78,21 @@ class Follow(db.Model):
 
 class Like(db.Model):
     like_id = Column(Integer, primary_key=True, autoincrement=True)
-    meme_id = Column(Integer, ForeignKey("meme.meme_id"), nullable=False)
+    meme_id = Column(Integer, ForeignKey("meme.meme_id", ondelete='CASCADE'), nullable=False)
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     like_date = Column(DateTime, nullable=False, default=datetime.now())
 
 
 class Bookmark(db.Model):
     bookmark_id = Column(Integer, primary_key=True, autoincrement=True)
-    meme_id = Column(Integer, ForeignKey("meme.meme_id"), nullable=False)
-    warehouse_id = Column(Integer, ForeignKey("warehouse.warehouse_id"), nullable=False)
+    meme_id = Column(Integer, ForeignKey("meme.meme_id", ondelete='CASCADE'), nullable=False)
+    warehouse_id = Column(Integer, ForeignKey("warehouse.warehouse_id", ondelete='CASCADE'), nullable=False)
     bookmark_time = Column(DateTime, nullable=False, default=datetime.now())
 
 
 class Report(db.Model):
     report_id = Column(Integer, primary_key=True, autoincrement=True)
-    meme_id = Column(Integer, ForeignKey("meme.meme_id"), nullable=False)
+    meme_id = Column(Integer, ForeignKey("meme.meme_id", ondelete='CASCADE'), nullable=False)
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     reason = Column(Text, nullable=False)
     report_time = Column(DateTime, nullable=False, default=datetime.now())
@@ -105,8 +105,8 @@ class Report(db.Model):
 
 class MemeTag(db.Model):
     memetag_id = Column(Integer, primary_key=True, autoincrement=True)
-    meme_id = Column(Integer, ForeignKey("meme.meme_id"), nullable=False)
-    tag_id = Column(Integer, ForeignKey("tag.tag_id"), nullable=False)
+    meme_id = Column(Integer, ForeignKey("meme.meme_id", ondelete='CASCADE'), nullable=False)
+    tag_id = Column(Integer, ForeignKey("tag.tag_id", ondelete='CASCADE'), nullable=False)
     
     
 
