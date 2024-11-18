@@ -133,17 +133,13 @@ def warehouse_get_bookmark():
         and_(Follow.followee_id==warehouse.user_id, Follow.follower_id==current_user.user_id)).first() is not None:
         return respond(600102, "用户无权访问未关注者的仓库")
     
-    bookmarks = Bookmark.query.filter(Bookmark.warehouse_id==warehouse_id).all()
-
-    bookmark_list = []
-    for bookmark in bookmarks:
-        bookmark_data = {
+    bookmarks_data = {
+        "bookmarks":[{
             "bookmarkId" : bookmark.bookmark_id,
             "memeId" : bookmark.meme_id,
             "warehouseId" : bookmark.warehouse_id,
             "bookmarkTime" : bookmark.bookmark_time,
-        }
+        } for bookmark in Bookmark.query.filter(Bookmark.warehouse_id==warehouse_id).all()]
+    }
 
-        bookmark_list.append(bookmark_data)
-
-    return respond(0, "查询成功", {"bookmarks":bookmark_list})
+    return respond(0, "查询成功", bookmarks_data)
