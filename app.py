@@ -17,7 +17,7 @@ from apis.like_api import like_api
 from apis.comment_api import comment_api
 from apis.post_api import post_api
 from apis.report_api import report_api
-
+from apis.follow_api import follow_api
 
 app.register_blueprint(auth_api)
 app.register_blueprint(userinfo_api)
@@ -27,6 +27,7 @@ app.register_blueprint(like_api)
 app.register_blueprint(comment_api)
 app.register_blueprint(post_api)
 app.register_blueprint(report_api)
+app.register_blueprint(follow_api)
 
 @app.route('/')
 def index():
