@@ -16,6 +16,7 @@ from apis.warehouse_api import warehouse_api
 from apis.like_api import like_api
 from apis.comment_api import comment_api
 from apis.post_api import post_api
+from apis.report_api import report_api
 
 
 app.register_blueprint(auth_api)
@@ -24,6 +25,8 @@ app.register_blueprint(meme_api)
 app.register_blueprint(warehouse_api)
 app.register_blueprint(like_api)
 app.register_blueprint(comment_api)
+app.register_blueprint(post_api)
+app.register_blueprint(report_api)
 
 @app.route('/')
 def index():

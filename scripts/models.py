@@ -104,10 +104,10 @@ class Bookmark(db.Model):
 class Report(db.Model):
     report_id = Column(Integer, primary_key=True, autoincrement=True)
     meme_id = Column(Integer, ForeignKey("meme.meme_id", ondelete='CASCADE'), nullable=False)
-    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=True) # could be anonymous
     reason = Column(Text, nullable=False)
     report_time = Column(DateTime, nullable=False, default=datetime.now())
-    status = Column(String(256), nullable=False)
+    status = Column(String(256), nullable=False, default='pending')
 
     __table_args__ = (
         CheckConstraint("status IN ('pending', 'resolved')", name="check_status"),
