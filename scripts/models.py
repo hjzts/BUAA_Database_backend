@@ -65,7 +65,9 @@ class Post(db.Model):
     post_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     content = Column(Text, nullable=False)
+    bounty = Column(Integer, nullable=False, default=5)
     post_time = Column(DateTime, nullable=False, default=datetime.now())
+    
 
 
 class Comment(db.Model):

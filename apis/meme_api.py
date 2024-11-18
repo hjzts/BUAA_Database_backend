@@ -195,7 +195,7 @@ def meme_search():
                         MemeTag, and_(
                             MemeTag.meme_id==Meme.meme_id,
                             MemeTag.tag_id==Tag.tag_id,
-                            Tag.name.ilike(f'%{kw}%')
+                            Tag.name.ilike(f'%{kw}%') # kw in tag
                         )
                     ).exists()
                 ))
