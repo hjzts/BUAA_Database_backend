@@ -65,10 +65,11 @@ class Post(db.Model):
     post_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     content = Column(Text, nullable=False)
-    bounty = Column(Integer, nullable=False, default=5)
+    bounty = Column(Integer, nullable=False)
     post_time = Column(DateTime, nullable=False, default=datetime.now())
-    
 
+    ref_postbounties = db.relationship('PostBounty', backref='post', cascade='all, delete-orphan')
+    
 
 class Comment(db.Model):
     comment_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -118,8 +119,13 @@ class MemeTag(db.Model):
     meme_id = Column(Integer, ForeignKey("meme.meme_id", ondelete='CASCADE'), nullable=False)
     tag_id = Column(Integer, ForeignKey("tag.tag_id"), nullable=False)
 
-   
-    
+
+class PostBounty(db.Model):
+    postbounty_id = Column(Integer, primary_key=True, autoincrement=True)
+    post_id = Column(Integer, ForeignKey("post.post_id", ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
+    bounty = Column(Integer, nullable=False)
+
     
 
 # Initialize the database

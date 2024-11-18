@@ -10,7 +10,7 @@ from datetime import datetime
 
 from scripts.err import ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
-from scripts.models import Meme, MemeTag, Tag, User, db
+from scripts.models import Meme, MemeTag, Tag, User, Post, db
 from scripts.utils import allowed_file, check_null_params, respond
 
 
@@ -23,12 +23,23 @@ def meme_upload():
     meme_img = request.files.get('meme') or None
     caption = request.form.get('caption') or None
     tags = [t.strip() for t in request.form.get('tags').replace('；',';').split(';')] or None
+    post_id = request.form.get('postId') or None
 
     for r in check_null_params(图片=meme_img, 标签=tags):
         return r
     
     if not allowed_file(meme_img.filename):
         return respond(ERR_WRONG_FORMAT, "图片格式错误！")
+    
+    # response post
+    if post_id is not None:
+        post = Post.query.filter(Post.post_id==post_id).first()
+        if post is None:
+            return respond(500104, "目标请求贴不存在！")
+        
+        current_user.hugo_coin += post.bounty
+
+        db.session.delete(post)
     
     filepath = os.path.join(MEME_FOLDER, datetime.now().strftime("%Y%m%d%H%M%S") +\
                              "%04x." % randint(0,16**4) + meme_img.filename.split('.')[-1])
@@ -62,7 +73,7 @@ def meme_upload():
     current_user.hugo_coin += 1
     db.session.commit()
 
-    return respond(0, "上传成功！")
+    return respond(0, "上传成功！", {"memeId": meme.meme_id})
 
 @app.route("/api/meme-delete", methods=['POST'])
 @login_required

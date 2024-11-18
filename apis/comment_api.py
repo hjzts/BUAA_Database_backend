@@ -46,7 +46,7 @@ def comment_add():
 
     db.session.commit()
 
-    return respond(0, "评论成功", {"CommentId": comment.comment_id})
+    return respond(0, "评论成功", {"commentId": comment.comment_id})
 
 @app.route("/api/comment-delete", methods=['POST'])
 @login_required
@@ -72,3 +72,44 @@ def comment_delete():
     db.session.commit()
 
     return respond(0, "删除成功")
+
+@app.route("/api/comment-get", methods=['POST'])
+@login_required
+def comment_get():
+    meme_id = request.form.get('memeId') or None
+
+    for r in check_null_params(表情包id=meme_id):
+        return r
+
+    meme = Meme.query.filter(Meme.meme_id==meme_id).first()
+
+    if meme is None:
+        return respond(800104, "表情包不存在")
+    
+    def recurrent_get(m_id: int, top_comment: Comment=None) -> dict:
+        comment_list = []
+        if top_comment is None:
+            top_comments = Comment.query.filter(and_(Comment.meme_id==m_id, Comment.to_comment_id==None)).all()
+            for top_comment in top_comments:
+                comment_list.append(recurrent_get(m_id, top_comment))
+            data_dict = {
+                "comments": comment_list
+            }
+        else:
+            sub_comments = Comment.query.filter(Comment.to_comment_id==top_comment.comment_id).all()
+            for sub_comment in sub_comments:
+                comment_list.append(recurrent_get(m_id, sub_comment))
+            data_dict = {
+                "commentId": top_comment.comment_id,
+                "username": User.query.filter(User.user_id==top_comment.user_id).first().username,
+                "content": top_comment.content,
+                "commentTime": top_comment.comment_time,
+                "comments": comment_list
+            }
+
+        return data_dict
+        
+
+    comment_data = recurrent_get(meme_id) # recurrently get all sub-comments
+
+    return respond(0, "获取成功", comment_data)

@@ -15,6 +15,7 @@ from apis.meme_api import meme_api
 from apis.warehouse_api import warehouse_api
 from apis.like_api import like_api
 from apis.comment_api import comment_api
+from apis.post_api import post_api
 
 
 app.register_blueprint(auth_api)
