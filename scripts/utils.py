@@ -1,7 +1,28 @@
 import os, sys, json, time
 
 from scripts.err import ERR_NULL_INPUT
-from scripts.init import ALLOWED_EXTENSIONS
+from scripts.init import app, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, MEME_FOLDER
+from scripts.models import db, User
+
+def init_env():
+    # 确保上传文件夹存在
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+
+    if not os.path.exists(MEME_FOLDER):
+        os.makedirs(MEME_FOLDER)
+
+    # 创建管理员用户
+    with app.app_context():
+        if User.query.filter(User.username=="admin").first() is None:
+            admin = User(
+                username="admin",
+                email="admin@ad.min",
+            )
+            admin.set_password("root")
+            db.session.add(admin)
+            db.session.commit()
+        
 
 def respond(code:int, info:str, data:dict=None):
     data_dict = data or {}

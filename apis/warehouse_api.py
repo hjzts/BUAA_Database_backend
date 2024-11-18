@@ -9,7 +9,7 @@ from datetime import datetime
 
 from scripts.err import ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
-from scripts.models import Bookmark, Meme, MemeTag, Tag, User, Warehouse, db
+from scripts.models import Bookmark, Follow, Meme, MemeTag, Tag, User, Warehouse, db
 from scripts.utils import allowed_file, check_null_params, respond
 
 
@@ -129,8 +129,9 @@ def warehouse_get_bookmark():
     if warehouse is None:
         return respond(600101, "仓库不存在")
 
-    if warehouse.user_id != current_user.user_id:
-        return respond(600102, "用户无权访问该仓库")
+    if warehouse.user_id != current_user.user_id and not Follow.query.filter(
+        and_(Follow.followee_id==warehouse.user_id, Follow.follower_id==current_user.user_id)).first() is not None:
+        return respond(600102, "用户无权访问未关注者的仓库")
     
     bookmarks = Bookmark.query.filter(Bookmark.warehouse_id==warehouse_id).all()
 

@@ -61,7 +61,10 @@ def auth_login():
         return respond(200101, "此用户不存在！")
     
     if not user.validate_password(password):
-        return respond(200101, "密码错误！")
+        return respond(200102, "密码错误！")
+    
+    if user.is_ban:
+        return respond(200103, "该用户已被封禁！")
     
     login_user(user)
         

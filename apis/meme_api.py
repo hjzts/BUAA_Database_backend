@@ -97,9 +97,7 @@ def meme_delete():
 @app.route("/api/meme-get-total-num", methods=['POST'])
 @login_required
 def meme_get_total_num():
-    num = Meme.query.count()
-
-    return respond(0, "查询成功", {"num":num})
+    return respond(0, "查询成功", {"num":Meme.query.count()})
 
 @app.route("/api/meme-view", methods=['POST'])
 @login_required

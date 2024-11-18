@@ -6,7 +6,8 @@ from flask import Flask, Response, render_template, request
 from flask_login import LoginManager
 import requests
 
-from scripts.init import UPLOAD_FOLDER, app, init_folders
+from scripts.init import UPLOAD_FOLDER, app
+from scripts.utils import init_env
 from scripts.models import db
 
 from apis.auth_api import auth_api
@@ -18,6 +19,7 @@ from apis.comment_api import comment_api
 from apis.post_api import post_api
 from apis.report_api import report_api
 from apis.follow_api import follow_api
+from apis.admin_api import admin_api
 
 app.register_blueprint(auth_api)
 app.register_blueprint(userinfo_api)
@@ -28,6 +30,7 @@ app.register_blueprint(comment_api)
 app.register_blueprint(post_api)
 app.register_blueprint(report_api)
 app.register_blueprint(follow_api)
+app.register_blueprint(admin_api)
 
 @app.route('/')
 def index():
@@ -62,7 +65,7 @@ if __name__ == '__main__':
             if os.path.isdir(UPLOAD_FOLDER):
                 shutil.rmtree(UPLOAD_FOLDER)
 
-    init_folders()
+    init_env()
 
     print("start server")
     app.run(debug=True, port=5000)

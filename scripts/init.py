@@ -19,12 +19,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-def init_folders():
-    # 确保上传文件夹存在
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
 
-    if not os.path.exists(MEME_FOLDER):
-        os.makedirs(MEME_FOLDER)
+
 
 
