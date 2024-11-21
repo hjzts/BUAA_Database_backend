@@ -7,7 +7,7 @@ from flask import Blueprint
 from sqlalchemy import and_, or_
 from datetime import datetime
 
-from scripts.err import ERR_WRONG_FORMAT
+from scripts.err import ERR_FOLLOW_EXISTS, ERR_FOLLOW_NOT_FOUND, ERR_SELF_FOLLOW, ERR_USER_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
 from scripts.models import Bookmark, Follow, Like, Meme, MemeTag, Tag, User, Warehouse, db
 from scripts.utils import allowed_file, check_null_params, respond
@@ -27,14 +27,14 @@ def follow_add():
     user = User.query.filter(User.user_id==user_id).first()
 
     if user is None:
-        return respond(1100101, "用户不存在")
+        return respond(ERR_USER_NOT_FOUND, "用户不存在")
     
     if user_id == str(current_user.user_id):
-        return respond(1100102, "不能关注自己")
+        return respond(ERR_SELF_FOLLOW, "不能关注自己")
     
     follow = Follow.query.filter(and_(Follow.follower_id==current_user.user_id, Follow.followee_id==user_id)).first()
     if follow is not None:
-        return respond(1100103, "无法重复关注")
+        return respond(ERR_FOLLOW_EXISTS, "无法重复关注")
     
     follow = Follow(
         followee_id=user_id,
@@ -57,7 +57,7 @@ def follow_revoke():
     follow = Follow.query.filter(Follow.followee_id==user_id).first()
 
     if follow is None:
-        return respond(1100104, "未关注用户无法取消关注")
+        return respond(ERR_FOLLOW_NOT_FOUND, "未关注用户无法取消关注")
     
     
     db.session.delete(follow)

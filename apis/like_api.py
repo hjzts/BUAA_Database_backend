@@ -7,7 +7,7 @@ from flask import Blueprint
 from sqlalchemy import and_, or_
 from datetime import datetime
 
-from scripts.err import ERR_WRONG_FORMAT
+from scripts.err import ERR_LIKE_EXISTS, ERR_LIKE_NOT_FOUND, ERR_MEME_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
 from scripts.models import Bookmark, Like, Meme, MemeTag, Tag, User, Warehouse, db
 from scripts.utils import allowed_file, check_null_params, respond
@@ -27,11 +27,11 @@ def like_add():
     meme = Meme.query.filter(Meme.meme_id==meme_id).first()
 
     if meme is None:
-        return respond(700101, "表情包不存在")
+        return respond(ERR_MEME_NOT_FOUND, "表情包不存在")
     
     like = Like.query.filter(and_(Like.user_id==current_user.user_id, Like.meme_id==meme_id)).first()
     if like is not None:
-        return respond(700102, "已点赞")
+        return respond(ERR_LIKE_EXISTS, "已点赞")
     
     like = Like(
         meme_id=meme_id,
@@ -56,11 +56,11 @@ def like_revoke():
     meme = Meme.query.filter(Meme.meme_id==meme_id).first()
 
     if meme is None:
-        return respond(700101, "表情包不存在")
+        return respond(ERR_MEME_NOT_FOUND, "表情包不存在")
     
     like = Like.query.filter(and_(Like.user_id==current_user.user_id, Like.meme_id==meme_id)).first()
     if like is None:
-        return respond(700102, "点赞不存在")
+        return respond(ERR_LIKE_NOT_FOUND, "点赞不存在")
     
     Like.query.filter(and_(Like.user_id==current_user.user_id, Like.meme_id==meme_id)).delete()
     meme.likes -= 1

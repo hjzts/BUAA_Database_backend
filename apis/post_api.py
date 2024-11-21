@@ -7,7 +7,7 @@ from flask import Blueprint
 from sqlalchemy import and_, or_
 from datetime import datetime
 
-from scripts.err import ERR_WRONG_FORMAT
+from scripts.err import ERR_BALANCE_INSUFFICIENT, ERR_POST_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
 from scripts.models import Bookmark, Comment, Like, Meme, MemeTag, Post, PostBounty, Tag, User, Warehouse, db
 from scripts.utils import allowed_file, check_null_params, respond
@@ -28,11 +28,11 @@ def post_create():
         return r
     
     if not bounty.isdecimal():
-        return respond(900103, "悬赏金额需为正整数")
+        return respond(ERR_WRONG_FORMAT, "悬赏金额需为正整数")
     
     print(int(current_user.hugo_coin),int(bounty))
     if int(current_user.hugo_coin) < int(bounty):
-        return respond(900104, f"用户余额不足{int(bounty)}，无法添加悬赏金额")
+        return respond(ERR_BALANCE_INSUFFICIENT, f"用户余额不足{int(bounty)}，无法添加悬赏金额")
     
     post = Post(
         user_id=current_user.user_id,
@@ -66,7 +66,7 @@ def post_delete():
     post = Post.query.filter(and_(Post.user_id==current_user.user_id, Post.post_id==post_id)).first()
 
     if post is None:
-        return respond(900103, "请求贴不存在或无权操作")
+        return respond(ERR_POST_NOT_FOUND, "请求贴不存在或无权操作")
 
     # bounty refund
     for postBounty in PostBounty.query.filter(PostBounty.post_id==post_id).all():
@@ -107,13 +107,13 @@ def post_add_bounty():
     post = Post.query.filter(Post.post_id==post_id).first()
 
     if post is None:
-        return respond(900103, "请求贴不存在")
+        return respond(ERR_POST_NOT_FOUND, "请求贴不存在")
     
     if not bounty.isdecimal():
-        return respond(900103, "悬赏金额需为正整数")
+        return respond(ERR_WRONG_FORMAT, "悬赏金额需为正整数")
     
     if int(current_user.hugo_coin) < int(bounty):
-        return respond(900104, f"用户余额不足{int(bounty)}，无法添加悬赏金额")
+        return respond(ERR_BALANCE_INSUFFICIENT, f"用户余额不足{int(bounty)}，无法添加悬赏金额")
 
     post.bounty += int(bounty)
     current_user.hugo_coin -= int(bounty)

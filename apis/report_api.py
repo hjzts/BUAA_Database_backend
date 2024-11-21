@@ -7,7 +7,7 @@ from flask import Blueprint
 from sqlalchemy import and_, or_
 from datetime import datetime
 
-from scripts.err import ERR_WRONG_FORMAT
+from scripts.err import ERR_MEME_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
 from scripts.models import Bookmark, Comment, Like, Meme, MemeTag, Post, PostBounty, Report, Tag, User, Warehouse, db
 from scripts.utils import allowed_file, check_null_params, respond
@@ -29,7 +29,7 @@ def report_issue():
     meme = Meme.query.filter(Meme.meme_id==meme_id).first()
 
     if meme is None:
-        return respond(1000101, "表情包不存在")
+        return respond(ERR_MEME_NOT_FOUND, "表情包不存在")
     
     report = Report(
         meme_id=meme_id,

@@ -8,7 +8,7 @@ from sqlalchemy import and_, or_
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
-from scripts.err import ERR_WRONG_FORMAT
+from scripts.err import ERR_MEME_NOT_FOUND, ERR_POST_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
 from scripts.models import Meme, MemeTag, Tag, User, Post, db
 from scripts.utils import allowed_file, check_null_params, respond
@@ -35,7 +35,7 @@ def meme_upload():
     if post_id is not None:
         post = Post.query.filter(Post.post_id==post_id).first()
         if post is None:
-            return respond(500104, "目标请求贴不存在！")
+            return respond(ERR_POST_NOT_FOUND, "目标请求贴不存在！")
         
         current_user.hugo_coin += post.bounty
 
@@ -86,7 +86,7 @@ def meme_delete():
     meme = Meme.query.filter(and_(Meme.meme_id==meme_id, Meme.user_id==current_user.user_id)).first()
 
     if meme is None:
-        return respond(500101, "表情包不存在或无权操作")
+        return respond(ERR_MEME_NOT_FOUND, "表情包不存在或无权操作")
 
     db.session.delete(meme)
     db.session.commit()
@@ -110,7 +110,7 @@ def meme_view():
     meme = Meme.query.filter(Meme.meme_id==meme_id).first()
 
     if meme is None:
-        return respond(500101, "表情包不存在")
+        return respond(ERR_MEME_NOT_FOUND, "表情包不存在")
 
     meme.views += 1
 
@@ -129,7 +129,7 @@ def meme_get():
     meme = Meme.query.filter(Meme.meme_id==meme_id).first()
 
     if meme is None:
-        return respond(500101, "表情包不存在")
+        return respond(ERR_MEME_NOT_FOUND, "表情包不存在")
 
     meme_data = {
         "memeId" : meme.meme_id,

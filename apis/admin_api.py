@@ -7,7 +7,7 @@ from functools import wraps
 
 from requests import delete
 
-from scripts.err import ERR_WRONG_FORMAT
+from scripts.err import ERR_BAN_ADMIN, ERR_MEME_NOT_FOUND, ERR_REPORT_NOT_FOUND, ERR_USER_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import app
 from scripts.models import Meme, Report, User, db
 from scripts.utils import check_null_params, respond
@@ -51,10 +51,10 @@ def admin_block_user():
 
     user:User = User.query.filter(User.user_id==user_id).first()
     if user == None:
-        return respond(300101, "此用户不存在！")
+        return respond(ERR_USER_NOT_FOUND, "此用户不存在！")
 
     if user.username == 'admin':
-        return respond(300105, "管理员不能封禁自己！")
+        return respond(ERR_BAN_ADMIN, "管理员不能封禁自己！")
     
     user.is_ban = True
         
@@ -71,7 +71,7 @@ def admin_unblock_user():
 
     user:User = User.query.filter(User.user_id==user_id).first()
     if user == None:
-        return respond(300101, "此用户不存在！")
+        return respond(ERR_USER_NOT_FOUND, "此用户不存在！")
     
     user.is_ban = False
         
@@ -88,7 +88,7 @@ def admin_block_meme():
 
     meme:Meme = Meme.query.filter(Meme.meme_id==meme_id).first()
     if meme == None:
-        return respond(300102, "此表情包不存在！")
+        return respond(ERR_MEME_NOT_FOUND, "此表情包不存在！")
     
     meme.is_block = True
         
@@ -105,7 +105,7 @@ def admin_unblock_meme():
 
     meme:Meme = Meme.query.filter(Meme.meme_id==meme_id).first()
     if meme == None:
-        return respond(300102, "此表情包不存在！")
+        return respond(ERR_MEME_NOT_FOUND, "此表情包不存在！")
     
     meme.is_block = False
         
@@ -150,7 +150,7 @@ def admin_get_report():
 
     report:Report = Report.query.filter(Report.report_id==report_id).first()
     if report == None:
-        return respond(300102, "此举报不存在！")
+        return respond(ERR_REPORT_NOT_FOUND, "此举报不存在！")
 
     report_data = {
         "reportId": report.report_id,
@@ -173,7 +173,7 @@ def admin_deal_with_report():
 
     report:Report = Report.query.filter(Report.report_id==report_id).first()
     if report == None:
-        return respond(300102, "此举报不存在！")
+        return respond(ERR_REPORT_NOT_FOUND, "此举报不存在！")
 
     meme = Meme.query.filter(Meme.meme_id==report.meme_id).first()
     if meme is not None:

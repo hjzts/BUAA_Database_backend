@@ -7,7 +7,7 @@ from flask import Blueprint
 from sqlalchemy import and_, or_
 from datetime import datetime
 
-from scripts.err import ERR_WRONG_FORMAT
+from scripts.err import ERR_COMMENT_NOT_FOUND, ERR_MEME_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
 from scripts.models import Bookmark, Comment, Like, Meme, MemeTag, Tag, User, Warehouse, db
 from scripts.utils import allowed_file, check_null_params, respond
@@ -29,12 +29,12 @@ def comment_add():
     meme = Meme.query.filter(Meme.meme_id==meme_id).first()
 
     if meme is None:
-        return respond(800101, "表情包不存在")
+        return respond(ERR_MEME_NOT_FOUND, "表情包不存在")
     
     if to_comment_id is not None:
         to_comment = Comment.query.filter(Comment.comment_id==to_comment_id).first()
         if to_comment is None:
-            return respond(800102, "回复的评论不存在")
+            return respond(ERR_COMMENT_NOT_FOUND, "回复的评论不存在")
     
     comment = Comment(
         meme_id=meme_id,
@@ -59,7 +59,7 @@ def comment_delete():
     comment = Comment.query.filter(and_(Comment.user_id==current_user.user_id, Comment.comment_id==comment_id)).first()
 
     if comment is None:
-        return respond(800103, "评论不存在或无权操作")
+        return respond(ERR_COMMENT_NOT_FOUND, "评论不存在或无权操作")
     
     def recurrent_delete(top_comment: Comment):
         sub_comments = Comment.query.filter(Comment.to_comment_id==top_comment.comment_id).all()
@@ -84,7 +84,7 @@ def comment_get():
     meme = Meme.query.filter(Meme.meme_id==meme_id).first()
 
     if meme is None:
-        return respond(800104, "表情包不存在")
+        return respond(ERR_MEME_NOT_FOUND, "表情包不存在")
     
     def recurrent_get(m_id: int, top_comment: Comment=None) -> dict:
         comment_list = []

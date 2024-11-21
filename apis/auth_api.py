@@ -4,7 +4,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from flask import  request
 from flask import Blueprint
 
-from scripts.err import ERR_WRONG_FORMAT
+from scripts.err import ERR_EMAIL_EXISTS, ERR_USER_BANNED, ERR_USER_NOT_FOUND, ERR_USERNAME_EXISTS, ERR_WRONG_FORMAT, ERR_WRONG_PASSWD
 from scripts.init import app
 from scripts.models import User, db
 from scripts.utils import check_null_params, respond
@@ -29,10 +29,10 @@ def auth_signup():
         return respond(ERR_WRONG_FORMAT, "邮箱不合法")
     
     if User.query.filter(User.username==username).first() != None:
-        return respond(200201, "此用户名已被占用！")
+        return respond(ERR_USERNAME_EXISTS, "此用户名已被占用！")
     
     if User.query.filter(User.email==email).first() != None:
-        return respond(200202, "此邮箱已被用于注册！")
+        return respond(ERR_EMAIL_EXISTS, "此邮箱已被用于注册！")
     
     user = User(
         username=username,
@@ -58,13 +58,13 @@ def auth_login():
     else:
         user:User = User.query.filter(User.username==name).first()
     if user == None:
-        return respond(200101, "此用户不存在！")
+        return respond(ERR_USER_NOT_FOUND, "此用户不存在！")
     
     if not user.validate_password(password):
-        return respond(200102, "密码错误！")
+        return respond(ERR_WRONG_PASSWD, "密码错误！")
     
     if user.is_ban:
-        return respond(200103, "该用户已被封禁！")
+        return respond(ERR_USER_BANNED, "该用户已被封禁！")
     
     login_user(user)
         

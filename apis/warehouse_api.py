@@ -7,7 +7,7 @@ from flask import Blueprint
 from sqlalchemy import and_, or_
 from datetime import datetime
 
-from scripts.err import ERR_WRONG_FORMAT
+from scripts.err import ERR_ACCESS_DENIED, ERR_BOOKMARK_EXISTS, ERR_BOOKMARK_NOT_FOUND, ERR_MEME_NOT_FOUND, ERR_WAREHOUSR_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
 from scripts.models import Bookmark, Follow, Meme, MemeTag, Tag, User, Warehouse, db
 from scripts.utils import allowed_file, check_null_params, respond
@@ -44,7 +44,7 @@ def warehouse_delete():
     warehouse = Warehouse.query.filter(Warehouse.warehouse_id==warehouse_id).first()
 
     if warehouse is None:
-        return respond(600101, "仓库不存在")
+        return respond(ERR_WAREHOUSR_NOT_FOUND, "仓库不存在")
     
     Bookmark.query.filter(Bookmark.warehouse_id==warehouse_id).delete()
     db.session.delete(warehouse)
@@ -64,21 +64,21 @@ def warehouse_add_bookmark():
     meme = Meme.query.filter(Meme.meme_id==meme_id).first()
 
     if meme is None:
-        return respond(600101, "表情包不存在")
+        return respond(ERR_MEME_NOT_FOUND, "表情包不存在")
 
     warehouse = Warehouse.query.filter(Warehouse.warehouse_id==warehouse_id).first()
 
     if warehouse is None:
-        return respond(600101, "仓库不存在")
+        return respond(ERR_WAREHOUSR_NOT_FOUND, "仓库不存在")
     
     if warehouse.user_id != current_user.user_id:
-        return respond(600102, "用户无权访问该仓库")
+        return respond(ERR_ACCESS_DENIED, "用户无权访问该仓库")
     
     bookmark = Bookmark.query.filter(
         and_(Bookmark.warehouse_id==warehouse_id, Bookmark.meme_id==meme_id)).first()
     
     if bookmark is not None:
-        return respond(600103, "该收藏已存在")
+        return respond(ERR_BOOKMARK_EXISTS, "该收藏已存在")
     
     bookmark = Bookmark(
         meme_id=meme_id,
@@ -101,15 +101,15 @@ def warehouse_remove_bookmark():
     bookmark = Bookmark.query.filter(Bookmark.bookmark_id==bookmark_id).first()
 
     if bookmark is None:
-        return respond(600104, "该收藏不存在")
+        return respond(ERR_BOOKMARK_NOT_FOUND, "该收藏不存在")
 
     warehouse = Warehouse.query.filter(Warehouse.warehouse_id==bookmark.warehouse_id).first()
 
     if warehouse is None:
-        return respond(600101, "仓库不存在")
+        return respond(ERR_WAREHOUSR_NOT_FOUND, "仓库不存在")
 
     if warehouse.user_id != current_user.user_id:
-        return respond(600102, "用户无权访问该仓库")
+        return respond(ERR_ACCESS_DENIED, "用户无权访问该仓库")
 
     db.session.delete(bookmark)
     db.session.commit()
@@ -127,11 +127,11 @@ def warehouse_get_bookmark():
     warehouse = Warehouse.query.filter(Warehouse.warehouse_id==warehouse_id).first()
 
     if warehouse is None:
-        return respond(600101, "仓库不存在")
+        return respond(ERR_WAREHOUSR_NOT_FOUND, "仓库不存在")
 
     if warehouse.user_id != current_user.user_id and not Follow.query.filter(
         and_(Follow.followee_id==warehouse.user_id, Follow.follower_id==current_user.user_id)).first() is not None:
-        return respond(600102, "用户无权访问未关注者的仓库")
+        return respond(ERR_ACCESS_DENIED, "用户无权访问未关注者的仓库")
     
     bookmarks_data = {
         "bookmarks":[{
