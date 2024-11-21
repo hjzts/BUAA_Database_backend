@@ -1,3 +1,4 @@
+from logging import WARNING
 from random import randint
 import re
 import os, sys, json, time
@@ -51,6 +52,22 @@ def warehouse_delete():
     db.session.commit()
 
     return respond(0, "删除成功！")
+
+@app.route("/api/warehouse-get", methods=['POST'])
+@login_required
+def warehouse_get():
+    warehouse_data = {
+        "warehouses":[{
+            "warehouseId":warehouse.warehouse_id,
+            "name": warehouse.name,
+            "capacity":warehouse.capacity
+        } for warehouse in Warehouse.query.filter(or_(Warehouse.user_id==current_user.user_id, 
+                Follow.query.filter(and_(Follow.followee_id==Warehouse.user_id,
+                                          Follow.follower_id==current_user.user_id)).exists()
+        ))]
+    }
+
+    return respond(0, "查询成功！", warehouse_data)
 
 @app.route("/api/warehouse-add-bookmark", methods=['POST'])
 @login_required
