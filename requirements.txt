@@ -3,4 +3,4 @@ flask_sqlalchemy
 flask_login
 requests
 pymysql
-flask cors
+flask_cors
