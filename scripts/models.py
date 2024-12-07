@@ -86,6 +86,7 @@ class Message(db.Model):
     type = Column(String, nullable=False, default="normal") # normal | withId
     content = Column(String, nullable=False)
     with_id = Column(Integer, nullable=True) # meme_id, comment_id
+    read = Column(Boolean, nullable=False, default=False)
 
 
 # Relations
