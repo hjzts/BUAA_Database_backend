@@ -3,6 +3,7 @@ import os, sys, json, time
 from flask_login import login_user, login_required, logout_user, current_user
 from flask import  request
 from flask import Blueprint
+from flask import session
 
 from scripts.err import ERR_EMAIL_EXISTS, ERR_USER_BANNED, ERR_USER_NOT_FOUND, ERR_USERNAME_EXISTS, ERR_WRONG_FORMAT, ERR_WRONG_PASSWD
 from scripts.init import app
@@ -43,6 +44,7 @@ def auth_signup():
     db.session.add(user)
     db.session.commit()
 
+    session['user_id'] = user.user_id
     return respond(0, "注册成功！", {"userId": user.user_id})
 
 @app.route("/api/auth-login", methods=['POST'])
@@ -73,6 +75,7 @@ def auth_login():
     if not os.path.exists(user_path):
         os.mkdir(user_path)
 
+    session['user_id'] = user.user_id
     return respond(0, "登录成功！", {"userId": user.user_id})
 
 @app.route("/api/auth-logout", methods=['POST'])

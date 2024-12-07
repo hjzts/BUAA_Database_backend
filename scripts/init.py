@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask import session
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -10,6 +11,9 @@ DEVELOP = True
 DB_URL = 'sqlite:///onlymemes.db' if DEVELOP else 'mysql+pymysql://u21374067:Aa773989@120.46.3.97:3306/h_db21374067'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URL
+app.config['SESSION_COOKIE_SIGNED'] = False
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True 
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
