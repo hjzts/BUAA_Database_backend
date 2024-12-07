@@ -39,7 +39,7 @@ def get_user_unread_message():
     message_data = {  
         "messages":[{
             "messageId":message.message_id,
-            "type": message.idType,
+            "type": message.id_type,
             "content":message.content,
             "withId": message.with_id,
             "messageTime": message.message_time,
