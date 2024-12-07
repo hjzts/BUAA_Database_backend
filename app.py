@@ -21,6 +21,7 @@ from apis.post_api import post_api
 from apis.report_api import report_api
 from apis.follow_api import follow_api
 from apis.admin_api import admin_api
+from apis.message_api import message_api
 
 CORS(app)
 
@@ -34,6 +35,7 @@ app.register_blueprint(post_api)
 app.register_blueprint(report_api)
 app.register_blueprint(follow_api)
 app.register_blueprint(admin_api)
+app.register_blueprint(message_api)
 
 @app.route('/')
 def index():

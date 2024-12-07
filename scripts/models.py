@@ -1,3 +1,4 @@
+from email import message
 from flask_login import LoginManager, UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import CheckConstraint, Column, Integer, String, Text, ForeignKey, DateTime, Boolean
@@ -78,6 +79,13 @@ class Comment(db.Model):
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     content = Column(Text, nullable=False)
     comment_time = Column(DateTime, nullable=False, default=datetime.now())
+
+class Message(db.Model):
+    message_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
+    type = Column(String, nullable=False, default="normal") # normal | withId
+    content = Column(String, nullable=False)
+    with_id = Column(Integer, nullable=True) # meme_id, comment_id
 
 
 # Relations

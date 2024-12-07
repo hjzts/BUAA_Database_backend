@@ -43,7 +43,7 @@ def auth_signup():
     db.session.add(user)
     db.session.commit()
 
-    return respond(0, "注册成功！")
+    return respond(0, "注册成功！", {"userId": user.user_id})
 
 @app.route("/api/auth-login", methods=['POST'])
 def auth_login():
@@ -73,7 +73,7 @@ def auth_login():
     if not os.path.exists(user_path):
         os.mkdir(user_path)
 
-    return respond(0, "登录成功！")
+    return respond(0, "登录成功！", {"userId": user.user_id})
 
 @app.route("/api/auth-logout", methods=['POST'])
 @login_required

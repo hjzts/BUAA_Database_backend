@@ -31,7 +31,7 @@ def user_info():
     return respond(0, "查询成功", info_data)
 
 @app.route("/api/userinfo-get-user", methods=['POST'])
-def user_info():
+def get_user():
 
     user_id = request.form.get('userId') or None
 
