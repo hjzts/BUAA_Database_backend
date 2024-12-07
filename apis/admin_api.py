@@ -9,7 +9,7 @@ from requests import delete
 
 from scripts.err import ERR_BAN_ADMIN, ERR_MEME_NOT_FOUND, ERR_REPORT_NOT_FOUND, ERR_USER_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import app
-from scripts.models import Meme, Report, User, db
+from scripts.models import Meme, Message, Report, User, db
 from scripts.utils import check_null_params, respond
 
 
@@ -57,6 +57,13 @@ def admin_block_user():
         return respond(ERR_BAN_ADMIN, "管理员不能封禁自己！")
     
     user.is_ban = True
+
+    ban_message = Message(
+        user_id = user.user_id,
+        type = "normal",
+        content = "您已被封禁！"
+    )
+    db.session.add(ban_message)
         
     db.session.commit()
 
@@ -74,6 +81,13 @@ def admin_unblock_user():
         return respond(ERR_USER_NOT_FOUND, "此用户不存在！")
     
     user.is_ban = False
+
+    unban_message = Message(
+        user_id = user.user_id,
+        type = "normal",
+        content = "您已被解封！"
+    )
+    db.session.add(unban_message)
         
     db.session.commit()
 
@@ -91,6 +105,13 @@ def admin_block_meme():
         return respond(ERR_MEME_NOT_FOUND, "此表情包不存在！")
     
     meme.is_block = True
+    ban_message = Message(
+        user_id = meme.user_id,
+        type = "withId",
+        content = "您上传的表情包已被封禁！",
+        with_id = meme.meme_id
+    )
+    db.session.add(ban_message)
         
     db.session.commit()
 
@@ -108,6 +129,13 @@ def admin_unblock_meme():
         return respond(ERR_MEME_NOT_FOUND, "此表情包不存在！")
     
     meme.is_block = False
+    unban_message = Message(
+        user_id = meme.user_id,
+        type = "withId",
+        content = "您上传的表情包已被解封！",
+        with_id = meme.meme_id
+    )
+    db.session.add(unban_message)
         
     db.session.commit()
 

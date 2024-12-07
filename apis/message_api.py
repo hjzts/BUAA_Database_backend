@@ -24,7 +24,8 @@ def get_user_message():
             "messageId":message.message_id,
             "type": message.type,
             "content":message.content,
-            "withId": message.with_id
+            "withId": message.with_id,
+            "messageTime": message.message_time,
         } for message in Message.query.filter(Message.user_id==current_user.user_id).all()]
     }
 

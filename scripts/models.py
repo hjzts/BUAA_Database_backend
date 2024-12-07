@@ -87,6 +87,7 @@ class Message(db.Model):
     content = Column(String, nullable=False)
     with_id = Column(Integer, nullable=True) # meme_id, comment_id
     read = Column(Boolean, nullable=False, default=False)
+    message_time = Column(DateTime, nullable=False, default=datetime.now())
 
 
 # Relations

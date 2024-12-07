@@ -10,7 +10,7 @@ from datetime import datetime
 
 from scripts.err import ERR_MEME_NOT_FOUND, ERR_POST_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
-from scripts.models import Meme, MemeTag, Tag, User, Post, db
+from scripts.models import Meme, MemeTag, Message, Tag, User, Post, db
 from scripts.utils import allowed_file, check_null_params, respond
 
 
@@ -31,15 +31,11 @@ def meme_upload():
     if not allowed_file(meme_img.filename):
         return respond(ERR_WRONG_FORMAT, "图片格式错误！")
     
-    # response post
+    post:Post = None
     if post_id is not None:
         post = Post.query.filter(Post.post_id==post_id).first()
         if post is None:
             return respond(ERR_POST_NOT_FOUND, "目标请求贴不存在！")
-        
-        current_user.hugo_coin += post.bounty
-
-        db.session.delete(post)
     
     filepath = os.path.join(MEME_FOLDER, datetime.now().strftime("%Y%m%d%H%M%S") +\
                              "%04x." % randint(0,16**4) + meme_img.filename.split('.')[-1])
@@ -72,6 +68,22 @@ def meme_upload():
 
     current_user.hugo_coin += 1
     db.session.commit()
+
+    # response post
+    if post is not None:
+        current_user.hugo_coin += post.bounty
+
+        post_message = Message(
+            user_id = post.user_id,
+            type = "withId",
+            content = f"{current_user.username}响应了您的请求贴！",
+            with_id = meme.meme_id
+        )
+        db.session.add(post_message)
+
+        db.session.delete(post)
+
+        db.session.commit()
 
     return respond(0, "上传成功！", {"memeId": meme.meme_id})
 

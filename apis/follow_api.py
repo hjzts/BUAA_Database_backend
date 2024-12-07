@@ -9,7 +9,7 @@ from datetime import datetime
 
 from scripts.err import ERR_FOLLOW_EXISTS, ERR_FOLLOW_NOT_FOUND, ERR_SELF_FOLLOW, ERR_USER_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
-from scripts.models import Bookmark, Follow, Like, Meme, MemeTag, Tag, User, Warehouse, db
+from scripts.models import Bookmark, Follow, Like, Meme, MemeTag, Message, Tag, User, Warehouse, db
 from scripts.utils import allowed_file, check_null_params, respond
 
 
@@ -41,6 +41,13 @@ def follow_add():
         follower_id=current_user.user_id,
     )
     db.session.add(follow)
+    follow_message = Message(
+        user_id = follow.followee_id,
+        type = "withId",
+        content = f"{current_user.username}关注了您",
+        with_id = current_user.user_id
+    )
+    db.session.add(follow_message)
 
     db.session.commit()
 

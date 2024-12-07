@@ -9,7 +9,7 @@ from datetime import datetime
 
 from scripts.err import ERR_COMMENT_NOT_FOUND, ERR_MEME_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
-from scripts.models import Bookmark, Comment, Like, Meme, MemeTag, Tag, User, Warehouse, db
+from scripts.models import Bookmark, Comment, Like, Meme, MemeTag, Message, Tag, User, Warehouse, db
 from scripts.utils import allowed_file, check_null_params, respond
 
 
@@ -26,13 +26,13 @@ def comment_add():
     for r in check_null_params(表情包id=meme_id, 评论内容=content):
         return r
     
-    meme = Meme.query.filter(Meme.meme_id==meme_id).first()
+    meme:Meme = Meme.query.filter(Meme.meme_id==meme_id).first()
 
     if meme is None:
         return respond(ERR_MEME_NOT_FOUND, "表情包不存在")
     
     if to_comment_id is not None:
-        to_comment = Comment.query.filter(Comment.comment_id==to_comment_id).first()
+        to_comment:Comment = Comment.query.filter(Comment.comment_id==to_comment_id).first()
         if to_comment is None:
             return respond(ERR_COMMENT_NOT_FOUND, "回复的评论不存在")
     
@@ -43,6 +43,21 @@ def comment_add():
         content=content
     )
     db.session.add(comment)
+    comment_message = Message(
+        user_id = meme.user_id,
+        type = "withId",
+        content = f"您上传的表情包有一个来自{current_user.username}的新评论",
+        with_id = meme.meme_id
+    )
+    db.session.add(comment_message)
+    if to_comment_id is not None:
+        to_comment_message = Message(
+            user_id = to_comment.user_id,
+            type = "withId",
+            content = f"{current_user.username}回复了您的评论",
+            with_id = meme.meme_id
+        )
+        db.session.add(to_comment_message)
 
     db.session.commit()
 
