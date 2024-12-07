@@ -4,6 +4,7 @@ import shutil
 import threading
 from flask import Flask, Response, render_template, request
 from flask_login import LoginManager
+from flask_cors import CORS
 import requests
 
 from scripts.init import UPLOAD_FOLDER, app
@@ -20,6 +21,8 @@ from apis.post_api import post_api
 from apis.report_api import report_api
 from apis.follow_api import follow_api
 from apis.admin_api import admin_api
+
+CORS(app)
 
 app.register_blueprint(auth_api)
 app.register_blueprint(userinfo_api)
