@@ -22,11 +22,29 @@ def get_user_message():
     message_data = {  
         "messages":[{
             "messageId":message.message_id,
-            "type": message.type,
+            "type": message.idType,
             "content":message.content,
             "withId": message.with_id,
             "messageTime": message.message_time,
+            "read": message.read
         } for message in Message.query.filter(Message.user_id==current_user.user_id).all()]
+    }
+
+    return respond(0, "查询成功", message_data)
+
+@app.route("/api/message-get-user-unread-message", methods=['POST'])
+@login_required
+def get_user_unread_message():
+
+    message_data = {  
+        "messages":[{
+            "messageId":message.message_id,
+            "type": message.idType,
+            "content":message.content,
+            "withId": message.with_id,
+            "messageTime": message.message_time,
+            "read": message.read
+        } for message in Message.query.filter(Message.user_id==current_user.user_id, Message.read==False).all()]
     }
 
     return respond(0, "查询成功", message_data)

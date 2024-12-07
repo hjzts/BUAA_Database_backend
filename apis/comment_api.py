@@ -43,17 +43,18 @@ def comment_add():
         content=content
     )
     db.session.add(comment)
-    comment_message = Message(
-        user_id = meme.user_id,
-        type = "withId",
-        content = f"您上传的表情包有一个来自{current_user.username}的新评论",
-        with_id = meme.meme_id
-    )
-    db.session.add(comment_message)
-    if to_comment_id is not None:
+    if meme.user_id != current_user.user_id:
+        comment_message = Message(
+            user_id = meme.user_id,
+            idType = "Meme",
+            content = f"您上传的表情包有一个来自{current_user.username}的新评论",
+            with_id = meme.meme_id
+        )
+        db.session.add(comment_message)
+    if to_comment_id is not None and meme.user_id != to_comment.user_id and current_user.user_id != to_comment.user_id:
         to_comment_message = Message(
             user_id = to_comment.user_id,
-            type = "withId",
+            idType = "Meme",
             content = f"{current_user.username}回复了您的评论",
             with_id = meme.meme_id
         )

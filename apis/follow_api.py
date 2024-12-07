@@ -43,7 +43,7 @@ def follow_add():
     db.session.add(follow)
     follow_message = Message(
         user_id = follow.followee_id,
-        type = "withId",
+        idType = "User",
         content = f"{current_user.username}关注了您",
         with_id = current_user.user_id
     )

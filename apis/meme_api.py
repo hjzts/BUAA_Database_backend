@@ -75,7 +75,7 @@ def meme_upload():
 
         post_message = Message(
             user_id = post.user_id,
-            type = "withId",
+            idType = "Meme",
             content = f"{current_user.username}响应了您的请求贴！",
             with_id = meme.meme_id
         )
