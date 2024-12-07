@@ -6,7 +6,7 @@ from flask import  request
 from flask import Blueprint
 from werkzeug.utils import secure_filename
 
-from scripts.err import ERR_WRONG_FORMAT
+from scripts.err import ERR_USER_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import app
 from scripts.models import User, db
 from scripts.utils import allowed_file, check_null_params, clearfile, respond
@@ -26,6 +26,31 @@ def user_info():
         "bio": current_user.bio,
         "currency": current_user.hugo_coin,
         "signup_time": current_user.signup_time
+    }
+
+    return respond(0, "查询成功", info_data)
+
+@app.route("/api/userinfo-get-user", methods=['POST'])
+def user_info():
+
+    user_id = request.form.get('userId') or None
+
+    for r in check_null_params(用户id=user_id):
+        return r
+
+    user:User = User.query.filter(User.user_id==user_id).first()
+
+    if user is None:
+        return respond(ERR_USER_NOT_FOUND, "用户不存在")
+
+    info_data={
+        "uid": user.user_id,
+        "username": user.username,
+        "email": user.email,
+        "profile_picture": user.profile_picture,
+        "bio": user.bio,
+        "currency": user.hugo_coin,
+        "signup_time": user.signup_time
     }
 
     return respond(0, "查询成功", info_data)
