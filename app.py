@@ -2,9 +2,8 @@ import argparse
 import os
 import shutil
 import threading
-from flask import Flask, Response, render_template, request, session
+from flask import Flask, Response, render_template, request, send_file, send_from_directory, session
 from flask_login import LoginManager
-from flask_cors import CORS
 import requests
 
 from scripts.init import UPLOAD_FOLDER, app
@@ -22,8 +21,6 @@ from apis.report_api import report_api
 from apis.follow_api import follow_api
 from apis.admin_api import admin_api
 from apis.message_api import message_api
-
-CORS(app, supports_credentials=True)
 
 app.register_blueprint(auth_api)
 app.register_blueprint(userinfo_api)
@@ -56,6 +53,11 @@ def internal_server_error(error):
 @app.errorhandler(500)
 def internal_server_error(error):
     return render_template('500.html'), 500
+
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    path = os.path.join(app.config['STATIC_FOLDER'], filename)
+    return send_file(path)
 
 
 if __name__ == '__main__':

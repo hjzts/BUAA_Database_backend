@@ -1,9 +1,12 @@
 import os
 from flask import Flask
 from flask import session
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None)
+
+CORS(app, supports_credentials=True)
 
 app.secret_key = 'man what can i say mamba out'
 
@@ -16,6 +19,9 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 app.config['SESSION_COOKIE_SECURE'] = True 
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+app.config['STATIC_FOLDER'] = '../static'
+
 
 UPLOAD_FOLDER = './static/images'
 MEME_FOLDER = './static/images/memes'
