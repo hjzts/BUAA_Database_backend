@@ -45,6 +45,24 @@ def like_add():
 
     return respond(0, "点赞成功", {"likeId": like.like_id})
 
+@app.route("/api/like-check", methods=['POST'])
+@login_required
+def like_check():
+    meme_id = request.form.get('memeId') or None
+
+    for r in check_null_params(表情包id=meme_id):
+        return r
+    meme = Meme.query.filter(Meme.meme_id==meme_id).first()
+
+    if meme is None:
+        return respond(ERR_MEME_NOT_FOUND, "表情包不存在")
+    
+    like = Like.query.filter(and_(Like.user_id==current_user.user_id, Like.meme_id==meme_id)).first()
+    if like is not None:
+        return respond(0, "查询成功", {"liked": True})
+    else:
+        return respond(0, "查询成功", {"liked": False})
+
 @app.route("/api/like-revoke", methods=['POST'])
 @login_required
 def like_revoke():
