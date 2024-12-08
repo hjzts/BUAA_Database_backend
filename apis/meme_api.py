@@ -111,6 +111,11 @@ def meme_delete():
 def meme_get_total_num():
     return respond(0, "查询成功", {"num":Meme.query.count()})
 
+@app.route("/api/meme-get-self-num", methods=['POST'])
+@login_required
+def meme_get_self_num():
+    return respond(0, "查询成功", {"num":Meme.query.filter(Meme.user_id==current_user.user_id).count()})
+
 @app.route("/api/meme-view", methods=['POST'])
 @login_required
 def meme_view():
