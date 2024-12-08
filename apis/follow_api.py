@@ -53,6 +53,28 @@ def follow_add():
 
     return respond(0, "关注成功", {"followId": follow.follow_id})
 
+@app.route("/api/follow-check", methods=['POST'])
+@login_required
+def follow_check():
+    user_id = request.form.get('userId')
+
+    for r in check_null_params(用户id=user_id):
+        return r
+    
+    user = User.query.filter(User.user_id==user_id).first()
+
+    if user is None:
+        return respond(ERR_USER_NOT_FOUND, "用户不存在")
+
+    if user_id == str(current_user.user_id):
+        return respond(0, "查询成功", {"isfollowing": False})
+
+    follow = Follow.query.filter(and_(Follow.follower_id==current_user.user_id, Follow.followee_id==user_id)).first()
+    if follow is not None:
+        return respond(0, "查询成功", {"isfollowing":True})
+    else:
+        return respond(0, "查询成功", {"isfollowing":False})
+
 @app.route("/api/follow-revoke", methods=['POST'])
 @login_required
 def follow_revoke():
