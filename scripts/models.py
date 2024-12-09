@@ -55,7 +55,7 @@ class Tag(db.Model):
 
 class Warehouse(db.Model):
     warehouse_id = Column(Integer, primary_key=True, autoincrement=True)
-    userd_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     name = Column(String(256), nullable=False)
     capacity = Column(Integer, nullable=False, default=30) # 剩余容量
 
