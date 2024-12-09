@@ -90,6 +90,10 @@ def like_revoke():
 @app.route("/api/like-get-num",methods=["POST"])
 @login_required
 def like_get_num():
-    like_num = Like.query.filter(Like.user_id==current_user.user_id).count()
+    total_likes = db.session.query(
+        db.func.sum(Meme.likes)
+    ).filter(
+        Meme.user_id == current_user.user_id
+    ).scalar() or 0
     
-    return respond(0, "查询成功", {"num": like_num})
+    return respond(0, "查询成功",{"num": total_likes})
