@@ -154,6 +154,8 @@ def warehouse_get_bookmark():
         return respond(ERR_ACCESS_DENIED, "用户无权访问未关注者的仓库")
     
     bookmarks_data = {
+        "name": warehouse.name,
+        "capacity":warehouse.capacity,
         "bookmarks":[{
             "bookmarkId" : bookmark.bookmark_id,
             "memeId" : bookmark.meme_id,
