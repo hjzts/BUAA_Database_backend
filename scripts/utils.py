@@ -3,6 +3,7 @@ import os, sys, json, time
 from scripts.err import ERR_NULL_INPUT
 from scripts.init import app, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, MEME_FOLDER
 from scripts.models import db, User
+from flask import session
 
 def init_env():
     # 确保上传文件夹存在
@@ -52,3 +53,18 @@ def clearfile(folder_path):
         # 如果是文件，删除文件
         if os.path.isfile(file_path) or os.path.islink(file_path):
             os.unlink(file_path)  # 删除文件或符号链接
+            
+def set_user_session(user: User):
+    session['user_id'] = user.user_id
+    session['user_name'] = user.username
+    session.permanent = True
+    
+def get_current_user():
+    """
+    从cookies中获取当前用户信息
+    """
+    user_id = session.get('user_id')
+    if user_id:
+        return User.query.filter(User.user_id==user_id).first()
+    return None
+    
