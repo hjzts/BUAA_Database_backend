@@ -95,9 +95,9 @@ def follow_revoke():
 
     return respond(0, "取消关注成功")
 
-@app.route("/api/follow-get-num", methods=["POST"])
+@app.route("/api/follow-get-followee-num", methods=["POST"])
 @login_required
-def follow_get_num():
+def follow_get_followee_num():
     user = current_user
 
     if user is None:
@@ -105,6 +105,84 @@ def follow_get_num():
     
     user_id = user.get_id()
     
-    follow_num = Follow.query.filter(Follow.followee_id==user_id).count()
+    followee_num = Follow.query.filter(Follow.followee_id==user_id).count()
 
-    return respond(0, "查询成功", {"followNum": follow_num})
+    return respond(0, "查询成功", {"followeeNum": followee_num})
+
+@app.route("/api/follow-get-follower-num", methods=["POST"])
+@login_required
+def follow_get_follower_num():
+    user = current_user
+    
+    if user is None:
+        return respond(ERR_USER_NOT_FOUND, "用户不存在")
+    
+    user_id = user.get_id()
+    
+    follower_num = Follow.qure.filter(Follow.follower_id==user_id).count()
+    
+    return respond(0, "查询成功", {"followerNum": follower_num})
+
+@app.route("/api/follow-get-followees", methods=["POST"])
+@login_required
+def follow_get_followees():
+    user = current_user
+    
+    if user is None:
+        return respond(ERR_USER_NOT_FOUND, "用户不存在")
+    
+    user_id = user.get_id()
+    
+    followees = db.session.query(
+        User.user_id,
+        User.profile_picture
+    ).join(
+        Follow, 
+        User.user_id == Follow.followee_id
+    ).filter(
+        Follow.follower_id == user_id
+    ).all()
+    
+    result = [
+        {
+            "user_id": user_id,
+            "profile_picture": profile_picture or ""  # 处理None值
+        }
+        for user_id, profile_picture in followees
+    ]
+    
+    return respond(0, "查询成功", {"followees": result})
+    
+    
+    
+@app.route("/api/follow-get-followers", methods=["POST"])
+@login_required
+def follow_get_followers():
+    user = current_user
+    
+    if user is None :
+        return respond(ERR_USER_NOT_FOUND, "用户不存在")
+    
+    user_id = user.get_id()
+    
+    followers = db.session.query(
+        User.user_id,
+        User.profile_picture
+    ).join(
+        Follow,
+        User.user_id == Follow.follower_id
+    ).filter(
+        Follow.followee_id == user_id
+    ).all()
+    
+    result = [
+        {
+            "user_id": user_id,
+            "profile_picture": profile_picture or ""  # 处理None值
+        }
+        for user_id, profile_picture in followers
+    ]
+    
+    return respond(0, "查询成功", {"followers": result})
+    
+    
