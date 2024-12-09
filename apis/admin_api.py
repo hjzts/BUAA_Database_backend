@@ -61,7 +61,7 @@ def admin_block_user():
 
         ban_message = Message(
             user_id = user.user_id,
-            idType = "normal",
+            id_type = "normal",
             content = "您已被封禁！"
         )
         db.session.add(ban_message)
@@ -86,7 +86,7 @@ def admin_unblock_user():
 
         unban_message = Message(
             user_id = user.user_id,
-            idType = "normal",
+            id_type = "normal",
             content = "您已被解封！"
         )
         db.session.add(unban_message)
@@ -110,7 +110,7 @@ def admin_block_meme():
         meme.is_block = True
         ban_message = Message(
             user_id = meme.user_id,
-            idType = "Meme",
+            id_type = "Meme",
             content = "您上传的表情包已被封禁！",
             with_id = meme.meme_id
         )
@@ -135,7 +135,7 @@ def admin_unblock_meme():
         meme.is_block = False
         unban_message = Message(
             user_id = meme.user_id,
-            idType = "Meme",
+            id_type = "Meme",
             content = "您上传的表情包已被解封！",
             with_id = meme.meme_id
         )

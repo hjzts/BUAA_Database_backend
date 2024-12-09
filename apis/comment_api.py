@@ -46,7 +46,7 @@ def comment_add():
     if meme.user_id != current_user.user_id:
         comment_message = Message(
             user_id = meme.user_id,
-            idType = "Meme",
+            id_type = "Meme",
             content = f"您上传的表情包有一个来自{current_user.username}的新评论",
             with_id = meme.meme_id
         )
@@ -54,7 +54,7 @@ def comment_add():
     if to_comment_id is not None and meme.user_id != to_comment.user_id and current_user.user_id != to_comment.user_id:
         to_comment_message = Message(
             user_id = to_comment.user_id,
-            idType = "Meme",
+            id_type = "Meme",
             content = f"{current_user.username}回复了您的评论",
             with_id = meme.meme_id
         )
