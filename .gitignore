@@ -2,3 +2,4 @@ __pycache__/
 *.db
 .vscode/
 images/
+! static/images/default.jpg

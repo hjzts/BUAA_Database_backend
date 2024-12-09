@@ -94,3 +94,20 @@ def follow_revoke():
     db.session.commit()
 
     return respond(0, "取消关注成功")
+
+@app.route("/api/follow-get-num", methods=["POST"])
+@login_required
+def follow_get_num():
+    user_id = request.form.get('userId') or None
+
+    for r in check_null_params(用户id=user_id):
+        return r
+    
+    user = User.query.filter(User.user_id==user_id).first()
+
+    if user is None:
+        return respond(ERR_USER_NOT_FOUND, "用户不存在")
+    
+    follow_num = Follow.query.filter(Follow.followee_id==user_id).count()
+
+    return respond(0, "查询成功", {"followNum": follow_num})

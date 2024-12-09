@@ -86,3 +86,18 @@ def like_revoke():
     db.session.commit()
 
     return respond(0, "取消成功")
+
+@app.route("/api/like-get-num",methods=["POST"])
+@login_required
+def like_get_num():
+    meme_id = request.form.get('memeId') or None
+
+    for r in check_null_params(表情包id=meme_id):
+        return r
+
+    meme = Meme.query.filter(Meme.meme_id==meme_id).first()
+
+    if meme is None:
+        return respond(ERR_MEME_NOT_FOUND, "表情包不存在")
+    
+    return respond(0, "查询成功", {"likes": meme.likes})

@@ -40,6 +40,7 @@ def auth_signup():
         email=email,
     )
     user.set_password(password)
+    user.profile_picture = "../static/images/default.jpg"
 
     db.session.add(user)
     db.session.commit()

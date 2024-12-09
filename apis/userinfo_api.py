@@ -122,4 +122,18 @@ def update_bio():
     current_user.bio = bio
     db.session.commit()
 
-    return respond(0, "个人简介已更新！", {"bio": bio})
+    return respond(0, "个人简介已更新！", {"bio": bio})   
+
+@app.route("/api/userinfo-update-password", methods=['POST'])
+@login_required
+def update_password():
+    password = request.form.get('password') or None
+    
+    for r in check_null_params(密码=password):
+        return r
+    
+    current_user.set_password(password)
+    db.session.commit()
+    
+    return respond(0, "用户密码已更新！", {"password": password})
+    
