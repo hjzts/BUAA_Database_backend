@@ -94,6 +94,13 @@ def post_get():
 
     return respond(0, "获取成功", posts_data)
 
+@app.route("/api/post-get-num-all", methods=["POST"])
+@login_required
+def post_get_num_all():
+    post_num = len(Post.query.all())
+
+    return respond(0, "获取成功", {"postNum": post_num})
+
 @app.route("/api/post-get-num", methods=["POST"])
 @login_required
 def post_get_num():
