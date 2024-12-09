@@ -104,7 +104,9 @@ def post_get_num_all():
 @app.route("/api/post-get-num", methods=["POST"])
 @login_required
 def post_get_num():
-    post_num = len(Post.query.filter(Post.user_id==current_user.user_id))
+    posts = Post.query.filter(Post.user_id==current_user.user_id)
+    
+    post_num = 0 if posts is None else len(posts)
 
     return respond(0, "获取成功", {"postNum": post_num})
 
