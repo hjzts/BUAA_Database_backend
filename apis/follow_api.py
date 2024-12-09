@@ -119,7 +119,7 @@ def follow_get_follower_num():
     
     user_id = user.get_id()
     
-    follower_num = Follow.qure.filter(Follow.follower_id==user_id).count()
+    follower_num = Follow.query.filter(Follow.follower_id==user_id).count()
     
     return respond(0, "查询成功", {"followerNum": follower_num})
 
