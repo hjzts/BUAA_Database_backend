@@ -72,6 +72,23 @@ def warehouse_get():
 
     return respond(0, "查询成功！", warehouse_data)
 
+@app.route("/api/warehouse-get-own",methods=["POST"])
+@login_required
+def warehouse_get_own():
+    warehouse_data = {
+        "warehouses":[{
+            "warehouseId":warehouse.warehouse_id,
+            "name": warehouse.name,
+            "capacity":warehouse.capacity,
+            "memeCount": Bookmark.query.filter(Bookmark.warehouse_id==warehouse.warehouse_id).count(),
+            "userId":warehouse.user_id,
+            "username":User.query.get(warehouse.user_id).username
+        } for warehouse in Warehouse.query.filter(Warehouse.user_id==current_user.user_id).exists()
+        ]
+    }
+
+    return respond(0, "查询成功！", warehouse_data)
+
 @app.route("/api/warehouse-add-bookmark", methods=['POST'])
 @login_required
 def warehouse_add_bookmark():
