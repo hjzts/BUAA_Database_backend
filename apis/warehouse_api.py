@@ -57,13 +57,13 @@ def warehouse_delete():
 @login_required
 def warehouse_get():
     warehouse_data = {
-        "username":current_user.username,
-        "userId":current_user.user_id,
         "warehouses":[{
             "warehouseId":warehouse.warehouse_id,
             "name": warehouse.name,
             "capacity":warehouse.capacity,
-            "memeCount": Bookmark.query.filter(Bookmark.warehouse_id==warehouse.warehouse_id).count()
+            "memeCount": Bookmark.query.filter(Bookmark.warehouse_id==warehouse.warehouse_id).count(),
+            "userId":warehouse.user_id,
+            "username":User.query.get(warehouse.user_id).username
         } for warehouse in Warehouse.query.filter(or_(Warehouse.user_id==current_user.user_id, 
                 Follow.query.filter(and_(Follow.followee_id==Warehouse.user_id,
                                           Follow.follower_id==current_user.user_id)).exists()
