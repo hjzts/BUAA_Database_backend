@@ -128,12 +128,16 @@ def update_bio():
 @login_required
 def update_password():
     password = request.form.get('password') or None
+    new_password = request.form.get('new_password') or None
     
-    for r in check_null_params(密码=password):
+    for r in check_null_params(原密码=password, 新密码=new_password):
         return r
     
-    current_user.set_password(password)
+    if not current_user.validate_password(password):
+        return respond(ERR_WRONG_FORMAT, "原密码错误！")
+    
+    current_user.set_password(new_password)
     db.session.commit()
     
-    return respond(0, "用户密码已更新！", {"password": password})
+    return respond(0, "密码已更新！", {"new_password": new_password})
     
