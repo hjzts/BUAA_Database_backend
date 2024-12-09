@@ -146,6 +146,7 @@ def follow_get_followees():
     result = [
         {
             "user_id": user_id,
+            "username": User.query.get(user_id).username,
             "profile_picture": profile_picture or ""  # 处理None值
         }
         for user_id, profile_picture in followees
@@ -178,6 +179,7 @@ def follow_get_followers():
     result = [
         {
             "user_id": user_id,
+            "username": User.query.get(user_id).username,
             "profile_picture": profile_picture or ""  # 处理None值
         }
         for user_id, profile_picture in followers
