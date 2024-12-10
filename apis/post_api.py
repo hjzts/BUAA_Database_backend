@@ -86,6 +86,7 @@ def post_get():
         "posts": [{
             "postId": post.post_id,
             "username": User.query.filter(User.user_id==post.user_id).first().username,
+            "user_profile_picture":User.query.filter(User.user_id==post.user_id).first().profile_picture,
             "content": post.content,
             "bounty": post.bounty,
             "postTime": post.post_time

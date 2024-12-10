@@ -184,7 +184,7 @@ def warehouse_remove_bookmark():
 
 @app.route("/api/warehouse-get-bookmarks", methods=['POST'])
 @login_required
-def warehouse_get_bookmark():
+def warehouse_get_bookmarks():
     warehouse_id = request.form.get('warehouseId') or None
 
     for r in check_null_params(仓库id=warehouse_id):
