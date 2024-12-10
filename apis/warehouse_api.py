@@ -74,6 +74,8 @@ def warehouse_get():
 
 @app.route("/api/warehouse-update-name", methods=["POST"])
 @login_required
+def warehouse_update_name():
+    pass
 
 
 @app.route("/api/warehouse-get-own",methods=["POST"])
@@ -87,7 +89,7 @@ def warehouse_get_own():
             "memeCount": Bookmark.query.filter(Bookmark.warehouse_id==warehouse.warehouse_id).count(),
             "userId":warehouse.user_id,
             "username":User.query.get(warehouse.user_id).username
-        } for warehouse in Warehouse.query.filter(Warehouse.user_id==current_user.user_id)
+        } for warehouse in Warehouse.query.filter(Warehouse.user_id==current_user.user_id).all()
         ]
     }
 
