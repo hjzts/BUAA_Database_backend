@@ -95,6 +95,22 @@ def post_get():
 
     return respond(0, "获取成功", posts_data)
 
+@app.route("/api/post-get-own", methods=['POST'])
+@login_required
+def post_get_own():
+    posts_data = {
+        "posts": [{
+            "postId": post.post_id,
+            "username": User.query.filter(User.user_id==post.user_id).first().username,
+            "user_profile_picture":User.query.filter(User.user_id==post.user_id).first().profile_picture,
+            "content": post.content,
+            "bounty": post.bounty,
+            "postTime": post.post_time
+        } for post in Post.query.filter(Post.user_id==current_user.user_id)]
+    }
+
+    return respond(0, "获取成功", posts_data)
+
 @app.route("/api/post-get-num-all", methods=["POST"])
 @login_required
 def post_get_num_all():
