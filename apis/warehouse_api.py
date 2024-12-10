@@ -72,6 +72,10 @@ def warehouse_get():
 
     return respond(0, "查询成功！", warehouse_data)
 
+@app.route("/api/warehouse-update-name", methods=["POST"])
+@login_required
+
+
 @app.route("/api/warehouse-get-own",methods=["POST"])
 @login_required
 def warehouse_get_own():
@@ -83,7 +87,7 @@ def warehouse_get_own():
             "memeCount": Bookmark.query.filter(Bookmark.warehouse_id==warehouse.warehouse_id).count(),
             "userId":warehouse.user_id,
             "username":User.query.get(warehouse.user_id).username
-        } for warehouse in Warehouse.query.filter(Warehouse.user_id==current_user.user_id).exists()
+        } for warehouse in Warehouse.query.filter(Warehouse.user_id==current_user.user_id)
         ]
     }
 
