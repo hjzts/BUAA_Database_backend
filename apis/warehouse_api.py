@@ -8,7 +8,7 @@ from flask import Blueprint
 from sqlalchemy import and_, or_
 from datetime import datetime
 
-from scripts.err import ERR_ACCESS_DENIED, ERR_BOOKMARK_EXISTS, ERR_BOOKMARK_NOT_FOUND, ERR_MEME_NOT_FOUND, ERR_WAREHOUSR_NOT_FOUND, ERR_WRONG_FORMAT
+from scripts.err import ERR_ACCESS_DENIED, ERR_BOOKMARK_EXISTS, ERR_BOOKMARK_NOT_FOUND, ERR_MEME_NOT_FOUND, ERR_WAREHOUSR_NOT_FOUND, ERR_WRONG_FORMAT,ERR_BAD_PERMMISION
 from scripts.init import MEME_FOLDER, app
 from scripts.models import Bookmark, Follow, Meme, MemeTag, Tag, User, Warehouse, db
 from scripts.utils import allowed_file, check_null_params, respond
@@ -47,6 +47,9 @@ def warehouse_delete():
     if warehouse is None:
         return respond(ERR_WAREHOUSR_NOT_FOUND, "仓库不存在")
     
+    if warehouse.user_id != current_user.user_id:
+        return respond(ERR_BAD_PERMMISION, "用户不能删除不是自己的仓库")
+    
     Bookmark.query.filter(Bookmark.warehouse_id==warehouse_id).delete()
     db.session.delete(warehouse)
     db.session.commit()
@@ -75,8 +78,28 @@ def warehouse_get():
 @app.route("/api/warehouse-update-name", methods=["POST"])
 @login_required
 def warehouse_update_name():
-    pass
+    warehouse_id = request.form.get('warehouseId') or None
+    new_warehouse_name = request.form.get('newWarehouseName') or None
+    
+    for r in check_null_params(仓库id=warehouse_id):
+        return r
 
+    warehouse = Warehouse.query.filter(Warehouse.warehouse_id==warehouse_id).first()
+    
+    if warehouse is None:
+        return respond(ERR_WAREHOUSR_NOT_FOUND, "仓库不存在")
+    
+    if warehouse.user_id != current_user.user_id:
+        return respond(ERR_ACCESS_DENIED, "用户无权访问该仓库")
+    
+    warehouse_name = request.form.get('warehouseName') or None
+    if warehouse.name != warehouse_name:
+        return respond(ERR_ACCESS_DENIED, "仓库名不匹配")
+    
+    warehouse.name = new_warehouse_name
+    db.session.commit()
+    
+    return respond(0, "仓库名修改成功! ", {"new_warehouse_name": new_warehouse_name})
 
 @app.route("/api/warehouse-get-own",methods=["POST"])
 @login_required
@@ -184,6 +207,10 @@ def warehouse_get_bookmark():
             "memeId" : bookmark.meme_id,
             "warehouseId" : bookmark.warehouse_id,
             "bookmarkTime" : bookmark.bookmark_time,
+            "likes": Meme.query.get(bookmark.meme_id).likes,
+            "uploaderId": Meme.query.get(bookmark.meme_id).user_id,
+            "uploaderName": User.query.get(Meme.query.get(bookmark.meme_id).user_id).username,
+            "tags": [tag.name for tag in Tag.query.join(MemeTag).filter(MemeTag.meme_id == bookmark.meme_id)]
         } for bookmark in Bookmark.query.filter(Bookmark.warehouse_id==warehouse_id).all()]
     }
 
