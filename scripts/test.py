@@ -157,7 +157,8 @@ def test_interact(session: requests.Session):
     
     print(json2txt(result.text))
 
-    file = open('./static/default.jpg', 'rb')
+    from scripts.config import WIN
+    file = open('.\\static\\default.jpg', 'rb') if WIN else open('./static/default.jpg', 'rb')
     form_data = {
         'caption': "is it 龙图？",
         'tags': "loong",
