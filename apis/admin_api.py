@@ -42,6 +42,43 @@ def admin_get_all_users():
 
     return respond(0, "获取成功", users_data)
 
+
+@app.route("/api/admin-get-all-blocked-users", methods=['POST'])
+@admin_required
+def admin_get_all_blocked_users():
+    users_data = {
+        "users": [{
+            "userId": user.user_id,
+            "username": user.username,
+            "email": user.email,
+            "avatar_url": user.profile_picture,
+            "bio": user.bio,
+            "signupTime": user.signup_time,
+            "currency": user.hugo_coin,
+            "banned": user.is_ban,
+        } for user in User.query.filter(User.is_ban==True).all()]
+    }
+
+    return respond(0, "获取成功", users_data)
+
+@app.route("/api/admin-get-all-unblocked-users", methods=['POST'])
+@admin_required
+def admin_get_all_unblocked_users():
+    users_data = {
+        "users": [{
+            "userId": user.user_id,
+            "username": user.username,
+            "email": user.email,
+            "avatar_url": user.profile_picture,
+            "bio": user.bio,
+            "signupTime": user.signup_time,
+            "currency": user.hugo_coin,
+            "banned": user.is_ban,
+        } for user in User.query.filter(User.is_ban==False).all()]
+    }
+
+    return respond(0, "获取成功", users_data)
+
 @app.route("/api/admin-block-user", methods=['POST'])
 @admin_required
 def admin_block_user():
