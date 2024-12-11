@@ -168,6 +168,34 @@ def meme_get():
 
     return respond(0, "查询成功", meme_data)
 
+@app.route("/api/meme-get-own", methods=['POST'])
+@login_required
+def meme_get_own():
+    memes = Meme.query.filter(Meme.user_id==current_user.user_id).all()
+
+    if memes is None:
+        return respond(ERR_MEME_NOT_FOUND, "该用户没有表情包")
+
+    meme_data = [{
+        "memeId" : meme.meme_id,
+        "caption": meme.caption,
+        "imageUrl" : meme.image_url,
+        "uploadUsername" : User.query.filter(User.user_id==meme.user_id).first().username,
+        "uploadUserId" : meme.user_id,
+        "uploadTime" : meme.upload_time,
+        "views" : meme.views,
+        "likes" : meme.likes,
+        "isBlock": meme.is_block,
+        "tags":[{
+            "tagId": tag.tag_id,
+            "tagName": tag.name
+        } for tag in Tag.query.join(MemeTag,
+            and_(MemeTag.meme_id==meme.meme_id, MemeTag.tag_id==Tag.tag_id)).all()]
+    } for meme in memes]
+
+
+    return respond(0, "查询成功", meme_data)
+
 @app.route("/api/meme-get-batch", methods=['POST'])
 @login_required
 def meme_get_batch():
