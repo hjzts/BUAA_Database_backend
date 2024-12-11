@@ -4,3 +4,7 @@ flask_login
 requests
 pymysql
 flask_cors
+beautifulsoup4
+lxml
+pyopenssl
+urllib3==1.26.5
