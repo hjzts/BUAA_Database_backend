@@ -172,7 +172,8 @@ def admin_get_all_blocked_memes():
     if memes is None:
         return respond(ERR_MEME_NOT_FOUND, "仓库中没有表情包")
 
-    meme_data = [{
+    meme_data = {
+        "memes": [{
         "memeId" : meme.meme_id,
         "caption": meme.caption,
         "imageUrl" : meme.image_url,
@@ -187,7 +188,8 @@ def admin_get_all_blocked_memes():
             "tagName": tag.name
         } for tag in Tag.query.join(MemeTag,
             and_(MemeTag.meme_id==meme.meme_id, MemeTag.tag_id==Tag.tag_id)).all()]
-    } for meme in memes]
+        } for meme in memes]
+    }
 
 
     return respond(0, "查询成功", meme_data)
