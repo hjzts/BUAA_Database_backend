@@ -30,13 +30,13 @@ def user_info():
 
     return respond(0, "查询成功", info_data)
 
-@app.route("/api/user-is-admin", methods=['POST'])
+@app.route("/api/userinfo-is-admin", methods=['POST'])
 @login_required
-def user_is_admin():
-    is_admin =  (current_user.name=="admin")
+def userinfo_is_admin():
+    is_admin =  (current_user.username=="admin")
     
     info_data={
-        "is_admin":is_admin
+        "is_admin":is_admin # true or false
     }
     
     return respond(0, "查询成功", info_data)
