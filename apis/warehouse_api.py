@@ -208,6 +208,7 @@ def warehouse_get_bookmarks():
             "warehouseId" : bookmark.warehouse_id,
             "bookmarkTime" : bookmark.bookmark_time,
             "likes": Meme.query.get(bookmark.meme_id).likes,
+            "imageUrl": Meme.query.get(bookmark.meme_id).image_url,
             "uploaderId": Meme.query.get(bookmark.meme_id).user_id,
             "uploaderName": User.query.get(Meme.query.get(bookmark.meme_id).user_id).username,
             "tags": [tag.name for tag in Tag.query.join(MemeTag).filter(MemeTag.meme_id == bookmark.meme_id)]

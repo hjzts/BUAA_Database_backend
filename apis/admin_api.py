@@ -43,6 +43,7 @@ def admin_get_all_users():
     return respond(0, "获取成功", users_data)
 
 @app.route("/api/admin-block-user", methods=['POST'])
+@admin_required
 def admin_block_user():
     user_id = request.form.get('userId') or None
 
@@ -71,6 +72,7 @@ def admin_block_user():
     return respond(0, "封禁成功！")
 
 @app.route("/api/admin-unblock-user", methods=['POST'])
+@admin_required
 def admin_unblock_user():
     user_id = request.form.get('userId') or None
 
@@ -96,6 +98,7 @@ def admin_unblock_user():
     return respond(0, "解封成功！")
 
 @app.route("/api/admin-block-meme", methods=['POST'])
+@admin_required
 def admin_block_meme():
     meme_id = request.form.get('memeId') or None
 
@@ -121,6 +124,7 @@ def admin_block_meme():
     return respond(0, "封禁成功！")
 
 @app.route("/api/admin-unblock-meme", methods=['POST'])
+@admin_required
 def admin_unblock_meme():
     meme_id = request.form.get('memeId') or None
 
