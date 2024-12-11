@@ -22,6 +22,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['STATIC_FOLDER'] = '../static'
 
+app.config['PORT'] = 5001
+
 
 UPLOAD_FOLDER = './static/images'
 MEME_FOLDER = './static/images/memes'

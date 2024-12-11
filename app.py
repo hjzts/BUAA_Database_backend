@@ -75,4 +75,4 @@ if __name__ == '__main__':
     init_env()
 
     print("start server")
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=app.config['PORT'])

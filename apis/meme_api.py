@@ -1,9 +1,11 @@
 from random import randint
 import re
 import os, sys, json, time
+from bs4 import BeautifulSoup
 from flask_login import login_user, login_required, logout_user, current_user
 from flask import  request
 from flask import Blueprint
+import requests
 from sqlalchemy import and_, or_
 from werkzeug.utils import secure_filename
 from datetime import datetime
@@ -249,3 +251,61 @@ def meme_search():
         meme_list.append(meme_data)
 
     return respond(0, "查询成功", {"memes":meme_list})
+
+
+
+@app.route("/api/meme-from-internet", methods=['POST'])
+# @login_required
+def meme_from_internet():
+    _url = f'https://www.diydoutu.com/diy/biaoqing/{randint(1, 11751)}'
+    response = requests.get(_url)
+    
+    soup = BeautifulSoup(response.content, 'lxml')
+    img = soup.find_all('img', class_='lazyload')[0]
+
+    src = img.get('src')
+    filename = src.split('/')[-1]
+    caption = img.get('alt').split(',')[0]
+    tags = [a.get('href').split('/')[-1] for a in soup.find_all('a', class_='btn btn-sm btn-outline-secondary')]
+    print(src, caption, tags)
+
+    img_response = requests.get(src)
+    response.raise_for_status()
+
+    filepath = os.path.join(MEME_FOLDER, datetime.now().strftime("%Y%m%d%H%M%S") +\
+                             "%04x." % randint(0,16**4) + filename.split('.')[-1])
+    while os.path.exists(filepath):
+        filepath = os.path.join(MEME_FOLDER, datetime.now().strftime("%Y%m%d%H%M%S") +\
+                                 "%04x." % randint(0,16**4) + filename.split('.')[-1])
+        
+    with open(filepath, 'wb') as file:
+        for chunk in img_response.iter_content(1024):  # 分块写入
+            file.write(chunk)
+
+    # print(filepath)
+    # return respond(0, "查询成功", {"file":filepath})
+    
+    meme = Meme(
+        user_id=1,
+        caption=caption,
+        image_url=filepath
+    )
+    db.session.add(meme)
+    db.session.commit()
+
+    if tags is not None:
+        for tag_name in tags:
+            tag = Tag.query.filter(Tag.name==tag_name).first()
+            if tag is None:
+                tag = Tag(name=tag_name)
+                db.session.add(tag)
+                db.session.commit()
+            memeTag = MemeTag(
+                meme_id=meme.meme_id,
+                tag_id=tag.tag_id
+            )
+            db.session.add(memeTag)
+
+    db.session.commit()
+
+    return respond(0, "上传成功！", {"memeId": meme.meme_id})
