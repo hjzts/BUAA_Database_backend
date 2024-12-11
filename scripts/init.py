@@ -24,9 +24,9 @@ app.config['STATIC_FOLDER'] = '../static'
 
 app.config['PORT'] = 5001
 
-
-UPLOAD_FOLDER = './static/images'
-MEME_FOLDER = './static/images/memes'
+from scripts.config import WIN
+UPLOAD_FOLDER = '.\\static\\images' if WIN else './static/images'
+MEME_FOLDER = '.\\static\\images' if WIN else './static/images/memes'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

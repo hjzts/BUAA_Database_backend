@@ -118,6 +118,7 @@ def comment_get():
             data_dict = {
                 "commentId": top_comment.comment_id,
                 "username": User.query.filter(User.user_id==top_comment.user_id).first().username,
+                "user_profile_picture": User.query.filter(User.user_id==top_comment.user_id).first().profile_picture,
                 "content": top_comment.content,
                 "commentTime": top_comment.comment_time,
                 "comments": comment_list
