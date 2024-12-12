@@ -4,12 +4,13 @@ from flask_login import login_user, login_required, logout_user, current_user
 from flask import  render_template, request
 from flask import Blueprint
 from functools import wraps
+from sqlalchemy import and_, or_
 
 from requests import delete
 
 from scripts.err import ERR_BAN_ADMIN, ERR_MEME_NOT_FOUND, ERR_REPORT_NOT_FOUND, ERR_USER_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import app
-from scripts.models import Meme, Message, Report, User, db
+from scripts.models import Meme, Message, Report, User, db, Tag, MemeTag
 from scripts.utils import check_null_params, respond
 
 
@@ -38,6 +39,43 @@ def admin_get_all_users():
             "currency": user.hugo_coin,
             "banned": user.is_ban,
         } for user in User.query.all()]
+    }
+
+    return respond(0, "获取成功", users_data)
+
+
+@app.route("/api/admin-get-all-blocked-users", methods=['POST'])
+@admin_required
+def admin_get_all_blocked_users():
+    users_data = {
+        "users": [{
+            "userId": user.user_id,
+            "username": user.username,
+            "email": user.email,
+            "avatar_url": user.profile_picture,
+            "bio": user.bio,
+            "signupTime": user.signup_time,
+            "currency": user.hugo_coin,
+            "banned": user.is_ban,
+        } for user in User.query.filter(User.is_ban==True).all()]
+    }
+
+    return respond(0, "获取成功", users_data)
+
+@app.route("/api/admin-get-all-unblocked-users", methods=['POST'])
+@admin_required
+def admin_get_all_unblocked_users():
+    users_data = {
+        "users": [{
+            "userId": user.user_id,
+            "username": user.username,
+            "email": user.email,
+            "avatar_url": user.profile_picture,
+            "bio": user.bio,
+            "signupTime": user.signup_time,
+            "currency": user.hugo_coin,
+            "banned": user.is_ban,
+        } for user in User.query.filter(User.is_ban==False).all()]
     }
 
     return respond(0, "获取成功", users_data)
@@ -97,6 +135,93 @@ def admin_unblock_user():
 
     return respond(0, "解封成功！")
 
+@app.route("/api/admin-get-all-memes", methods=['POST'])
+@admin_required
+def admin_get_all_memes():
+    memes = Meme.query.all()
+
+    if memes is None:
+        return respond(ERR_MEME_NOT_FOUND, "仓库中没有表情包")
+
+    meme_data = [{
+        "memeId" : meme.meme_id,
+        "caption": meme.caption,
+        "imageUrl" : meme.image_url,
+        "uploadUsername" : User.query.filter(User.user_id==meme.user_id).first().username,
+        "uploadUserId" : meme.user_id,
+        "uploadTime" : meme.upload_time,
+        "views" : meme.views,
+        "likes" : meme.likes,
+        "isBlock": meme.is_block,
+        "tags":[{
+            "tagId": tag.tag_id,
+            "tagName": tag.name
+        } for tag in Tag.query.join(MemeTag,
+            and_(MemeTag.meme_id==meme.meme_id, MemeTag.tag_id==Tag.tag_id)).all()]
+    } for meme in memes]
+
+
+    return respond(0, "查询成功", meme_data)
+
+
+@app.route("/api/admin-get-all-blocked-memes", methods=['POST'])
+@admin_required
+def admin_get_all_blocked_memes():
+    memes = Meme.query.filter(Meme.is_block==True).all()
+
+    if memes is None:
+        return respond(ERR_MEME_NOT_FOUND, "仓库中没有表情包")
+
+    meme_data = {
+        "memes": [{
+        "memeId" : meme.meme_id,
+        "caption": meme.caption,
+        "imageUrl" : meme.image_url,
+        "uploadUsername" : User.query.filter(User.user_id==meme.user_id).first().username,
+        "uploadUserId" : meme.user_id,
+        "uploadTime" : meme.upload_time,
+        "views" : meme.views,
+        "likes" : meme.likes,
+        "isBlock": meme.is_block,
+        "tags":[{
+            "tagId": tag.tag_id,
+            "tagName": tag.name
+        } for tag in Tag.query.join(MemeTag,
+            and_(MemeTag.meme_id==meme.meme_id, MemeTag.tag_id==Tag.tag_id)).all()]
+        } for meme in memes]
+    }
+
+
+    return respond(0, "查询成功", meme_data)
+
+@app.route("/api/admin-get-all-unblocked-memes", methods=['POST'])
+@admin_required
+def admin_get_all_unblocked_memes():
+    memes = Meme.query.filter(Meme.is_block==False).all()
+
+    if memes is None:
+        return respond(ERR_MEME_NOT_FOUND, "仓库中没有表情包")
+
+    meme_data = [{
+        "memeId" : meme.meme_id,
+        "caption": meme.caption,
+        "imageUrl" : meme.image_url,
+        "uploadUsername" : User.query.filter(User.user_id==meme.user_id).first().username,
+        "uploadUserId" : meme.user_id,
+        "uploadTime" : meme.upload_time,
+        "views" : meme.views,
+        "likes" : meme.likes,
+        "isBlock": meme.is_block,
+        "tags":[{
+            "tagId": tag.tag_id,
+            "tagName": tag.name
+        } for tag in Tag.query.join(MemeTag,
+            and_(MemeTag.meme_id==meme.meme_id, MemeTag.tag_id==Tag.tag_id)).all()]
+    } for meme in memes]
+
+
+    return respond(0, "查询成功", meme_data)
+
 @app.route("/api/admin-block-meme", methods=['POST'])
 @admin_required
 def admin_block_meme():
@@ -117,7 +242,6 @@ def admin_block_meme():
             content = "您上传的表情包已被封禁！",
             with_id = meme.meme_id
         )
-        db.session.add(ban_message)
             
         db.session.commit()
 
@@ -142,9 +266,8 @@ def admin_unblock_meme():
             id_type = "Meme",
             content = "您上传的表情包已被解封！",
             with_id = meme.meme_id
-        )
-        db.session.add(unban_message)
-            
+        )            
+        
         db.session.commit()
 
     return respond(0, "解封成功！")

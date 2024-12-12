@@ -70,7 +70,7 @@ def post_delete():
 
     # bounty refund
     for postBounty in PostBounty.query.filter(PostBounty.post_id==post_id).all():
-        user:User = User.query.filter(User.user_id==postBounty.user_id)
+        user:User = User.query.filter(User.user_id==postBounty.user_id).first()
         user.hugo_coin += postBounty.bounty
     
     db.session.delete(post) # recurrently delete all sub-comments
@@ -86,6 +86,7 @@ def post_get():
         "posts": [{
             "postId": post.post_id,
             "username": User.query.filter(User.user_id==post.user_id).first().username,
+            "userId": User.query.filter(User.user_id==post.user_id).first().user_id,
             "user_profile_picture":User.query.filter(User.user_id==post.user_id).first().profile_picture,
             "content": post.content,
             "bounty": post.bounty,
@@ -102,6 +103,7 @@ def post_get_own():
         "posts": [{
             "postId": post.post_id,
             "username": User.query.filter(User.user_id==post.user_id).first().username,
+            "userId": User.query.filter(User.user_id==post.user_id).first().user_id,
             "user_profile_picture":User.query.filter(User.user_id==post.user_id).first().profile_picture,
             "content": post.content,
             "bounty": post.bounty,
