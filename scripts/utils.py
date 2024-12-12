@@ -21,7 +21,7 @@ def init_env():
             admin = User(
                 username="admin",
                 email="admin@ad.min",
-                profile_picture = './static/default'
+                profile_picture = './static/images/default.jpg'
             )
             admin.set_password("root")
             db.session.add(admin)
