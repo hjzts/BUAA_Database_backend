@@ -139,19 +139,45 @@ def test_meme(session: requests.Session):
             'tags': "猫; 可爱; 写实"
         }
         result = session.post(f'{post_url}/api/meme-upload', data=form_data, files={'meme':file})
-    
     print(json2txt(result.text))
 
     for i in range(1,10+1):
-
         file = open(find_filename(f'./static/assets', f'nl{i}'), 'rb')
         form_data = {
             'caption': f"奶龙{i}",
-            'tags': "奶龙; 动画; 抽象;"
+            'tags': "奶龙; 动画; 抽象"
         }
         result = session.post(f'{post_url}/api/meme-upload', data=form_data, files={'meme':file})
-    
     print(json2txt(result.text))
+
+    for i in range(1,4+1):
+        file = open(find_filename(f'./static/assets', f'c{i}'), 'rb')
+        form_data = {
+            'caption': f"坤坤{i}",
+            'tags': "cxk; 小黑子; 抽象"
+        }
+        result = session.post(f'{post_url}/api/meme-upload', data=form_data, files={'meme':file})
+    print(json2txt(result.text))
+
+    for i in range(1,5+1):
+        file = open(find_filename(f'./static/assets', f'g{i}'), 'rb')
+        form_data = {
+            'caption': f"乌龟{i}",
+            'tags': "乌龟; 可爱; 绿毛龟"
+        }
+        result = session.post(f'{post_url}/api/meme-upload', data=form_data, files={'meme':file})
+    print(json2txt(result.text))
+
+    for i in range(1,10+1):
+        file = open(find_filename(f'./static/assets', f'my{i}'), 'rb')
+        form_data = {
+            'caption': f"MYGO{i}",
+            'tags': "MYGO; 动漫; 乐队"
+        }
+        result = session.post(f'{post_url}/api/meme-upload', data=form_data, files={'meme':file})
+    print(json2txt(result.text))
+
+
 
     form_data = {
         'content': "无内鬼，来张龙图",
