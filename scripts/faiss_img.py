@@ -20,9 +20,6 @@ model = AutoModel.from_pretrained('facebook/dinov2-small').to(device)
 
 index_path = app.config['INDEX_PATH']
 
-
-image_map = {}
-
 def img2vec(image):
     if type(image) == str :
         img = Image.open(image).convert('RGB')
@@ -74,8 +71,6 @@ def search_similar_img(image, k:int):
     indices = indices.squeeze()
     indices = indices[indices >= 0]
     # print(indices)
-    # image_ids = [image_map[key] for key in indices[indices >= 0]]
-    # print(image_ids)
     
     return indices
 

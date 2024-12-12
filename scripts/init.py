@@ -22,7 +22,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['STATIC_FOLDER'] = '../static'
 
-app.config['PORT'] = 5001
+app.config['PORT'] = 5000
 
 from scripts.config import WIN
 UPLOAD_FOLDER = '.\\static\\images' if WIN else './static/images'
@@ -31,7 +31,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-app.config['INDEX_PATH'] = './instance/vector.index'
+app.config['INDEX_PATH'] = '.\\instance\\vector.index' if WIN else './instance/vector.index'
 
 
 

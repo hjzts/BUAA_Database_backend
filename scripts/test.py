@@ -1,6 +1,7 @@
 import io
 import json
 import os
+import glob
 from random import randint
 from turtle import down
 from bs4 import BeautifulSoup
@@ -10,9 +11,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 
-from init import app
+from scripts.init import app
 
-post_url = f"http://127.0.0.1:{app.config['PORT']}"
+post_url = ""
 
 def download_image(image_url, save_path):
     # 检查文件夹是否存在，如果不存在则创建
@@ -43,11 +44,19 @@ def download_image(image_url, save_path):
     # 关闭浏览器
     driver.quit()
 
+
+def find_filename(path, filename):
+    pattern = os.path.join(path, f"{filename}.*")  # Match any extension
+    files = glob.glob(pattern)
+    return files[0] if files else None
+
 def test():
-    
+    global post_url
+    post_url = f"http://127.0.0.1:{app.config['PORT']}"
+
     session = requests.Session()
-    test_from_internet(session)
-    return
+    # test_from_internet(session)
+    # return
 
     test_create_user(session)
     
@@ -123,36 +132,24 @@ def test_create_user(session: requests.Session):
 
 
 def test_meme(session: requests.Session):
-    file = open('./static/default.jpg', 'rb')
-    form_data = {
-        'caption': "a meme1",
-        'tags': "114; 514; mamba out1"
-    }
-    result = session.post(f'{post_url}/api/meme-upload',data=form_data, files={'meme':file})
+    for i in range(1,10+1):
+        file = open(find_filename(f'./static/assets', f'm{i}'), 'rb')
+        form_data = {
+            'caption': f"猫{i}",
+            'tags': "猫; 可爱; 写实"
+        }
+        result = session.post(f'{post_url}/api/meme-upload', data=form_data, files={'meme':file})
+    
+    print(json2txt(result.text))
 
-    form_data = {
-        'caption': "a meme2",
-        'tags': "114; 514; mamba out2"
-    }
-    result = session.post(f'{post_url}/api/meme-upload',data=form_data, files={'meme':file})
+    for i in range(1,10+1):
 
-    form_data = {
-        'caption': "a meme3",
-        'tags': "114; 514; mamba out3"
-    }
-    result = session.post(f'{post_url}/api/meme-upload',data=form_data, files={'meme':file})
-
-    form_data = {
-        'caption': "a meme4",
-        'tags': "114; 514; mamba out4"
-    }
-    result = session.post(f'{post_url}/api/meme-upload',data=form_data, files={'meme':file})
-
-    form_data = {
-        'caption': "a meme5",
-        'tags': "114; 514; mamba out5"
-    }
-    result = session.post(f'{post_url}/api/meme-upload',data=form_data, files={'meme':file})
+        file = open(find_filename(f'./static/assets', f'nl{i}'), 'rb')
+        form_data = {
+            'caption': f"奶龙{i}",
+            'tags': "奶龙; 动画; 抽象;"
+        }
+        result = session.post(f'{post_url}/api/meme-upload', data=form_data, files={'meme':file})
     
     print(json2txt(result.text))
 
@@ -274,7 +271,6 @@ def test_admin(session: requests.Session):
     print(json2txt(result.text))
 
 
-
 def test_message(session: requests.Session):
     print(do_login(session, "cxc", "abc"))
     result = session.post(f'{post_url}/api/message-get-user-unread-message')
@@ -283,6 +279,7 @@ def test_message(session: requests.Session):
     print(do_login(session, "cxc2", "abcd"))
     result = session.post(f'{post_url}/api/message-get-user-unread-message')
     print(json2txt(result.text))
+
 
 if __name__ == "__main__":
     test()
