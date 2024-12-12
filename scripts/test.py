@@ -114,7 +114,7 @@ def test_create_user(session: requests.Session):
 
     print(do_login(session, "cxc", "abc"))
 
-    avatar = open('./static/default.jpg', 'rb')
+    avatar = open('./static/images/default.jpg', 'rb')
     result = session.post(f'{post_url}/api/userinfo-update-avatar', files={'avatar':avatar})
     print(json2txt(result.text))
 
@@ -231,7 +231,7 @@ def test_interact(session: requests.Session):
     print(json2txt(result.text))
 
     from scripts.config import WIN
-    file = open('.\\static\\default.jpg', 'rb') if WIN else open('./static/default.jpg', 'rb')
+    file = open('.\\static\\images\\default.jpg', 'rb') if WIN else open('./static/images/default.jpg', 'rb')
     form_data = {
         'caption': "is it 龙图？",
         'tags': "loong",
@@ -269,6 +269,7 @@ def test_admin(session: requests.Session):
         'memeId': '5',
         'reason': 'ju ban le'
     }
+    # breakpoint()
     result = session.post(f'{post_url}/api/report-issue', data=form_data)
     print(json2txt(result.text))
 
