@@ -67,9 +67,9 @@ def search_similar_img(image, k:int):
 
     # index = faiss.read_index(index_path)
     d,indices = index.search(vector, k)
-
+    print(d)
     indices = indices.squeeze()
-    indices = indices[indices >= 0]
+    indices = indices[np.logical_and(indices >= 0, d.squeeze() < 1.2)]
     # print(indices)
     
     return indices
