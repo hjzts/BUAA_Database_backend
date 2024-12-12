@@ -5,6 +5,8 @@ from scripts.init import app, ALLOWED_EXTENSIONS, UPLOAD_FOLDER, MEME_FOLDER
 from scripts.models import db, User
 from flask import session
 
+from scripts.faiss_img import index, init_faiss
+
 def init_env():
     # 确保上传文件夹存在
     if not os.path.exists(UPLOAD_FOLDER):
@@ -19,10 +21,13 @@ def init_env():
             admin = User(
                 username="admin",
                 email="admin@ad.min",
+                profile_picture = './static/default'
             )
             admin.set_password("root")
             db.session.add(admin)
             db.session.commit()
+    
+    init_faiss()
         
 
 def respond(code:int, info:str, data:dict=None):

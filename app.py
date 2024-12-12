@@ -9,6 +9,7 @@ import requests
 from scripts.init import UPLOAD_FOLDER, app
 from scripts.utils import init_env
 from scripts.models import db
+from scripts.faiss_img import index
 
 from apis.auth_api import auth_api
 from apis.userinfo_api import userinfo_api
@@ -71,6 +72,7 @@ if __name__ == '__main__':
             db.create_all()
             if os.path.isdir(UPLOAD_FOLDER):
                 shutil.rmtree(UPLOAD_FOLDER)
+            os.remove(app.config['INDEX_PATH'])
 
     init_env()
 

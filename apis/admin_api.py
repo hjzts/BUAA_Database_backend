@@ -9,6 +9,7 @@ from sqlalchemy import and_, or_
 from requests import delete
 
 from scripts.err import ERR_BAN_ADMIN, ERR_MEME_NOT_FOUND, ERR_REPORT_NOT_FOUND, ERR_USER_NOT_FOUND, ERR_WRONG_FORMAT
+from scripts.faiss_img import remove_image
 from scripts.init import app
 from scripts.models import Meme, Message, Report, User, db, Tag, MemeTag
 from scripts.utils import check_null_params, respond
@@ -336,6 +337,7 @@ def admin_deal_with_report():
 
     meme = Meme.query.filter(Meme.meme_id==report.meme_id).first()
     if meme is not None:
+        remove_image(meme.meme_id)
         db.session.delete(meme)
 
     report.status = 'resolved'

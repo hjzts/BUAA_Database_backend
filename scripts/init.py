@@ -31,6 +31,8 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+app.config['INDEX_PATH'] = './instance/vector.index'
+
 
 
 
