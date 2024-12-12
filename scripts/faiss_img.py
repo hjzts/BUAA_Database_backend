@@ -59,6 +59,7 @@ def add_img_to_index(image_path, image_id):
 def remove_image(remove_id):
     global index
     index.remove_ids(np.array([remove_id], dtype=np.int64))
+    dump_index()
 
 def dump_index():
     faiss.write_index(index, index_path)

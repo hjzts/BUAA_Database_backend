@@ -179,7 +179,7 @@ def meme_get():
 @app.route("/api/meme-get-own", methods=['POST'])
 @login_required
 def meme_get_own():
-    memes = Meme.query.filter(Meme.user_id==current_user.user_id).all()
+    memes = Meme.query.filter(Meme.user_id==current_user.user_id).order_by(Meme.upload_time.desc()).all()
 
     if memes is None:
         return respond(ERR_MEME_NOT_FOUND, "该用户没有表情包")
