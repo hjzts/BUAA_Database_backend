@@ -64,7 +64,10 @@ def static_files(filename):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="args")
     parser.add_argument('-d', action='store_true', help='drop all')
+    parser.add_argument('-p', type=int, default="5000")
     args = parser.parse_args()
+
+    app.config['PORT'] = args.p
 
     with app.app_context():
         if args.d:

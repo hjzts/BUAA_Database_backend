@@ -221,7 +221,7 @@ def meme_get_batch():
     
     lowerbound = int(page_idx) * int(page_size) + 1
     upperbound = (int(page_idx) + 1) * int(page_size) + 1
-    memes = Meme.query.filter(and_(Meme.meme_id >= lowerbound, Meme.meme_id < upperbound)).all()
+    memes = Meme.query.filter(and_(Meme.meme_id >= lowerbound, Meme.meme_id < upperbound)).order_by(Meme.upload_time.desc()).all()
 
     meme_list = []
     for meme in memes:
