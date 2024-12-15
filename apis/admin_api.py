@@ -9,6 +9,7 @@ from sqlalchemy import and_, or_
 from requests import delete
 
 from scripts.err import ERR_BAN_ADMIN, ERR_MEME_NOT_FOUND, ERR_REPORT_NOT_FOUND, ERR_USER_NOT_FOUND, ERR_WRONG_FORMAT
+from scripts.faiss_img import remove_image
 from scripts.init import app
 from scripts.models import Meme, Message, Report, User, db, Tag, MemeTag
 from scripts.utils import check_null_params, respond
@@ -172,7 +173,8 @@ def admin_get_all_blocked_memes():
     if memes is None:
         return respond(ERR_MEME_NOT_FOUND, "仓库中没有表情包")
 
-    meme_data = [{
+    meme_data = {
+        "memes": [{
         "memeId" : meme.meme_id,
         "caption": meme.caption,
         "imageUrl" : meme.image_url,
@@ -187,7 +189,8 @@ def admin_get_all_blocked_memes():
             "tagName": tag.name
         } for tag in Tag.query.join(MemeTag,
             and_(MemeTag.meme_id==meme.meme_id, MemeTag.tag_id==Tag.tag_id)).all()]
-    } for meme in memes]
+        } for meme in memes]
+    }
 
 
     return respond(0, "查询成功", meme_data)
@@ -334,6 +337,7 @@ def admin_deal_with_report():
 
     meme = Meme.query.filter(Meme.meme_id==report.meme_id).first()
     if meme is not None:
+        remove_image(meme.meme_id)
         db.session.delete(meme)
 
     report.status = 'resolved'

@@ -1,5 +1,6 @@
 __pycache__/
 *.db
+*.index
 .vscode/
 images/
 ! static/images/default.jpg

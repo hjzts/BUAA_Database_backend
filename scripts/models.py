@@ -83,8 +83,8 @@ class Comment(db.Model):
 class Message(db.Model):
     message_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
-    id_type = Column(String, nullable=False, default="normal") # normal | withId
-    content = Column(String, nullable=False)
+    id_type = Column(String(256), nullable=False, default="normal") # normal | withId
+    content = Column(Text, nullable=False)
     with_id = Column(Integer, nullable=True) # meme_id, comment_id
     read = Column(Boolean, nullable=False, default=False)
     message_time = Column(DateTime, nullable=False, default=datetime.now())

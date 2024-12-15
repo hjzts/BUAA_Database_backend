@@ -41,7 +41,7 @@ def auth_signup():
     )
     user.set_password(password)
     from scripts.config import WIN
-    user.profile_picture = "\\static\\images\\default.jpg" if WIN else "/static/images/default.jpg"
+    user.profile_picture = ".\\static\\images\\default.jpg" if WIN else "./static/images/default.jpg"
 
     db.session.add(user)
     db.session.commit()

@@ -5,8 +5,10 @@ from bs4 import BeautifulSoup
 from flask_login import login_user, login_required, logout_user, current_user
 from flask import  request
 from flask import Blueprint
+from numpy import indices
 import requests
 from sqlalchemy import and_, or_
+from torch import NoneType
 from werkzeug.utils import secure_filename
 from datetime import datetime
 
@@ -14,6 +16,7 @@ from scripts.err import ERR_MEME_NOT_FOUND, ERR_POST_NOT_FOUND, ERR_WRONG_FORMAT
 from scripts.init import MEME_FOLDER, app
 from scripts.models import Meme, MemeTag, Message, Tag, User, Post, db
 from scripts.utils import allowed_file, check_null_params, respond
+from scripts.faiss_img import add_img_to_index, remove_image, search_similar_img
 
 
 meme_api = Blueprint('meme_api', __name__, template_folder='../templates')
@@ -68,6 +71,8 @@ def meme_upload():
             )
             db.session.add(memeTag)
 
+    add_img_to_index(image_path=meme.image_url, image_id=meme.meme_id)
+
     current_user.hugo_coin += 1
     db.session.commit()
 
@@ -101,7 +106,8 @@ def meme_delete():
 
     if meme is None:
         return respond(ERR_MEME_NOT_FOUND, "表情包不存在或无权操作")
-
+    
+    remove_image(meme_id)
     db.session.delete(meme)
     db.session.commit()
 
@@ -173,7 +179,7 @@ def meme_get():
 @app.route("/api/meme-get-own", methods=['POST'])
 @login_required
 def meme_get_own():
-    memes = Meme.query.filter(Meme.user_id==current_user.user_id).all()
+    memes = Meme.query.filter(Meme.user_id==current_user.user_id).order_by(Meme.upload_time.desc()).all()
 
     if memes is None:
         return respond(ERR_MEME_NOT_FOUND, "该用户没有表情包")
@@ -215,7 +221,7 @@ def meme_get_batch():
     
     lowerbound = int(page_idx) * int(page_size) + 1
     upperbound = (int(page_idx) + 1) * int(page_size) + 1
-    memes = Meme.query.filter(and_(Meme.meme_id >= lowerbound, Meme.meme_id < upperbound)).all()
+    memes = Meme.query.filter(and_(Meme.meme_id >= lowerbound, Meme.meme_id < upperbound)).order_by(Meme.upload_time.desc()).all()
 
     meme_list = []
     for meme in memes:
@@ -334,6 +340,48 @@ def meme_from_internet():
             )
             db.session.add(memeTag)
 
+    add_img_to_index(image_path=meme.image_url, image_id=meme.meme_id)
+
     db.session.commit()
 
     return respond(0, "上传成功！", {"memeId": meme.meme_id})
+
+@app.route("/api/meme-search-by-image", methods=['POST'])
+@login_required
+def meme_search_by_image():
+
+    img = request.files.get('image') or None
+    k = request.form.get('k') or None
+
+    for r in check_null_params(图片=img, 搜索数量=k):
+        return r
+    
+    # print(img)
+    indices = search_similar_img(img, int(k))
+    print(indices)
+    # breakpoint()
+
+    meme_list = []
+    for meme_id in indices.tolist():
+        meme = Meme.query.filter(Meme.meme_id==meme_id).first()
+        if meme is None:
+            continue
+        meme_data = {
+            "memeId" : meme.meme_id,
+            "caption": meme.caption,
+            "imageUrl" : meme.image_url,
+            "uploadUsername" : User.query.filter(User.user_id==meme.user_id).first().username,
+            "uploadTime" : meme.upload_time,
+            "views" : meme.views,
+            "likes" : meme.likes,
+            "isBlock": meme.is_block,
+            "tags":[{
+                "tagId": tag.tag_id,
+                "tagName": tag.name
+            } for tag in Tag.query.join(MemeTag,
+                and_(MemeTag.meme_id==meme.meme_id, MemeTag.tag_id==Tag.tag_id)).all()]
+        }
+
+        meme_list.append(meme_data)
+
+    return respond(0, "查询成功", {"memes":meme_list})
